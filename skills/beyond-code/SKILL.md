@@ -11,10 +11,10 @@ description: >
 
 # Terminology Reference
 
-This skill uses RFC 2119 keywords:
+This skill suite uses RFC 2119 keywords and structural definitions:
 
-| Keyword | Meaning |
-|---------|---------|
+| Keyword / Term | Meaning |
+|----------------|---------|
 | MUST / REQUIRED | Absolute obligation. Violation = process failure. |
 | MUST NOT | Absolute prohibition. Violation = process failure. |
 | NEVER | Zero-exception prohibition. |
@@ -24,6 +24,8 @@ This skill uses RFC 2119 keywords:
 | SHOULD / SHOULD NOT | Strong guidance — deviate only with stated reason. |
 | MAY / OPTIONAL | Agent discretion. |
 | EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
+| Minor Deviation | Implementation detail not in plan.md that does not alter public interfaces, file inventory, data contracts, or dependencies (e.g. private helper, local type). Log in gate.md; non-blocking. |
+| Substantive Deviation | Action that alters public APIs, touches files outside File Inventory, adds unapproved dependencies, changes data contracts, or violates spec Non-Goals/Invariants. Log in gate.md AND triggers immediate STOP. |
 
 # HARD-GATE: No Code Before Spec
 
@@ -34,16 +36,21 @@ gate.md Gate 1 is cleared.
 The ONLY exception: a single-function, single-file bug fix where the
 user explicitly says "skip beyond-code".
 
-To write code without completing think and plan stages is to VIOLATE
-this skill. Do not do it.
+# Role & Human-Agent Dynamics
 
-# Role
+- When intent is ambiguous, ask ONE concrete clarifying question with a recommended default.
+- When the user's response to a gate check is clearly affirmative ("go", "ok", "sure", "looks good", "start", "build it"), treat it as confirmation and proceed immediately. Do not ask redundant confirmation questions.
+- When the user asks to skip something non-essential, skip it cleanly.
+- When the user asks for more detail, provide it without unnecessary summarization.
+- Default to confirming before irreversible actions (out-of-bounds file creation, commits, stage transitions).
 
-Your default posture: ask before assuming, confirm before acting.
-When intent is ambiguous, clarify instead of guessing.
-When the user wants speed, skip what they say to skip.
-When they want thoroughness, ask more, detail more.
-The user decides the pace; you provide the structure.
+# "just do it" / Autonomous Pipeline Semantics
+
+When the user instructs "just do it", "proceed directly", or gives full autonomy upfront:
+- **Full Discipline**: The agent MUST NOT skip any stage or self-review (spec.md, plan.md, Bounds checks, and adversarial verification are still completely executed).
+- **Silent Flow**: Set spec.md and plan.md status to `confirmed`, clear respective gates automatically in gate.md with timestamps, and advance through stages without pausing for intermediate sign-offs.
+- **Alert on Exception**: The agent MUST STOP only if a **Substantive Deviation** occurs or a hard blocker is hit during Build/Verify.
+- **Final Report**: Conclude by presenting the Exception-First Verification Report for final user acceptance.
 
 # Initiative Directory Layout
 
@@ -51,15 +58,15 @@ Each initiative lives under `.beyond-code/<slug>/`:
 
 ```
 .beyond-code/<slug>/
-  spec.md    What to build + acceptance criteria
-  plan.md    How to build it + exhaustive implementation bounds
+  spec.md    What to build + data contracts + Non-Goals + acceptance criteria
+  plan.md    How to build it + exhaustive implementation bounds + tasks
   gate.md    Progress ledger — single source of truth
 ```
 
 gate.md is the single canonical source for initiative state.
 All files MUST follow this schema — do not redefine fields in sub-skills.
 
-```
+```markdown
 ---
 slug: <initiative-slug>
 created: <YYYY-MM-DD>
@@ -72,8 +79,7 @@ created: <YYYY-MM-DD>
 
 ## Gate 2: Plan Ready
 - [ ] plan.md created: `<path>`
-- [ ] Spec coverage self-review: N/N covered
-- [ ] Placeholder scan: 0 found
+- [ ] Pre-presentation validation passed
 - [ ] User confirmed: `<timestamp>`
 - [ ] Gate cleared
 
@@ -89,7 +95,7 @@ Commit behavior depends on `.beyond-code/config.yaml`:
 
 ## Deviations
 > Agent MUST log any implementation decision NOT in plan.md.
-| Timestamp | Task | Deviation | Rationale |
+| Timestamp | Task | Level (Minor / Substantive) | Deviation | Rationale |
 
 ## Gate 4: Verification
 - [ ] Automated checks passed (with auditor evidence)
@@ -113,7 +119,7 @@ handle their own stage's work.
 # When the request is unclear
 
 Create `.beyond-code/<slug>/gate.md`:
-```
+```markdown
 ---
 slug: <slug>
 created: <today>
@@ -144,12 +150,11 @@ Load the `beyond-code-verify` skill.
 # Gate Enforcement
 
 NEVER self-approve a gate. Each HARD-GATE clears ONLY when:
-- User gives explicit confirmation ("go", "start", "build it") OR
-- User gives "just do it" instruction to skip individual confirmations
+- User gives explicit confirmation ("go", "start", "build it", "ok", "sure") OR
+- User gave "just do it" autonomous pipeline instruction
 - The cleared status is recorded in gate.md with a timestamp
 
-If an ambiguous response ("looks good", "sure", "ok") follows a gate
-check, ask explicitly: "Shall I proceed to the next stage?"
+If the response is genuinely ambiguous ("maybe", "hmm", "I think so?"), clarify before proceeding.
 
 # Managing multiple pieces of work
 
@@ -200,7 +205,7 @@ want a fresh start, do not delete the old initiative — move it to
 # Aborting an initiative
 
 When the user wants to stop, record in gate.md under a new section:
-```
+```markdown
 ## Status: ABORTED
 <timestamp> — <reason>
 ```
@@ -223,9 +228,8 @@ If absent, ask the user how they want commits handled and write
 the file. Do not re-read or re-create this file — sub-skills only
 read it.
 
-```
-.beyond-code/config.yaml
-
+```yaml
+# .beyond-code/config.yaml
 commit:
   when: per-task | per-plan | manual    # default per-task
   format: project | conventional | user # default project

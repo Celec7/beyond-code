@@ -49,11 +49,11 @@ Think ──[HARD-GATE]──→ Plan ──[HARD-GATE]──→ Build ──[HA
 
 **Think** — Anti-noise questioning gate (no micro-implementation questions, no 0.01% extreme cases). Scope Check splits multi-subsystem initiatives. Produces `spec.md` with Given/When/Then scenarios, Core Data Contracts & Invariants, Explicit Non-Goals (negative space), and reasonable Assumptions.
 
-**Plan** — Architecture & unified data flow overview + bite-sized tasks with exact signatures and behavior descriptions. Exhaustive Implementation Bounds. Spec Coverage self-review and Non-Goals compliance check.
+**Plan** — Architecture & unified data flow overview + atomic bite-sized tasks with exact signatures and behavior descriptions. Exhaustive Implementation Bounds. Runs Pre-Presentation Validation (Spec Coverage, Placeholder Scan, Bounds Cross-Validation, and Non-Goals compliance).
 
-**Build** — Step 0 validates Implementation Bounds. Enforces the **First-Principles Root-Cause Protocol** (no ad-hoc symptom patching, upstream source fix). Deviations logged in real-time; ≥5 or first substantive deviation triggers STOP and user review.
+**Build** — Stage 0 validates Implementation Bounds. Enforces the **First-Principles Root-Cause Protocol** (no ad-hoc symptom patching, upstream source fix). Classifies deviations (Minor vs Substantive); substantive deviations trigger immediate STOP, while minor deviations trigger review at ≥5.
 
-**Verify** — Spawns an independent Auditor Subagent (isolated from builder bias) for 3D adversarial auditing. Filters benign seams and generates an **Exception-First Verification Report** highlighting substantive deviations, silent degradation, and fresh command evidence before user acceptance.
+**Verify** — Spawns an independent Auditor Subagent (isolated from builder bias) for 3D adversarial auditing. Filters benign seams and generates an **Exception-First Verification Report** highlighting substantive deviations, silent degradation, and fresh command evidence before user acceptance and archiving.
 
 ## Directory Structure
 

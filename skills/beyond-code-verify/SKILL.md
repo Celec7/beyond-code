@@ -9,24 +9,13 @@ description: >
 
 # Terminology Reference
 
-This skill uses RFC 2119 keywords:
-
-| Keyword | Meaning |
-|---------|---------|
-| MUST / REQUIRED | Absolute obligation. |
-| MUST NOT | Absolute prohibition. |
-| NEVER | Zero-exception prohibition. |
-| HARD-GATE | Must pass before next stage. |
-| STOP | Cease current action. |
-| ONLY | Exclusive action — no other path permitted. |
-| MAY | Agent discretion. |
-| EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
+This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`.
 
 # Purpose
 
 Verify that the implementation matches the agreed spec and plan with zero
-silent compromises. An independent auditor perspective (via subagent or strict
-adversarial persona) audits the actual code diff against spec and plan, filters
+silent compromises. An independent auditor perspective (via subagent or isolated
+adversarial scan) audits the actual code diff against spec and plan, filters
 benign implementation seams, and generates an **Exception-First Verification Report**
 highlighting substantive deviations, silent degradation, and concrete evidence.
 
@@ -46,12 +35,17 @@ from an isolated, adversarial auditor perspective:
   1. `.beyond-code/<slug>/spec.md` (agreed requirements & scenarios)
   2. `.beyond-code/<slug>/plan.md` (agreed bounds, architecture & tasks)
   3. Current `git diff` against the starting base commit.
-  Do NOT pass intermediate conversational chit-chat or excuses from the build stage.
+  
+  The subagent prompt MUST include:
+  - Verbatim contents of `spec.md`, `plan.md`, and `git diff`.
+  - The 3-dimensional scan instructions (Sections 1-3 below).
+  - The Exception-First Verification Report template (Stage 2 below).
+  - Explicit instruction NOT to accept excuses or extrapolate beyond raw diff/command outputs.
+  Do NOT pass intermediate conversational chit-chat from the build stage.
 
 - **If subagents are unavailable**:
-  The verifying agent MUST explicitly switch to a **Strict Red-Team Auditor Persona**:
-  assume the implementation contains hidden shortcuts, skipped edge cases, or
-  unauthorized compromises until fresh concrete evidence proves otherwise.
+  The verifying agent MUST execute the full 3-dimensional scan below with strict objectivity,
+  treating the implementation as unproven until fresh concrete command outputs and diff inspections confirm it.
 
 The Auditor MUST execute the following 3-dimensional scan:
 
@@ -70,7 +64,7 @@ Scan `git diff` and search for:
 
 ### 3. Semantic Seam & Substantive Deviation Analysis
 Distinguish between benign code realities and unauthorized agent discretion:
-- **🟢 Benign Implementation Seams (Accept & Collapse)**:
+- **🟢 Minor Deviations / Benign Seams (Accept & Collapse)**:
   Internal helper variables, TypeScript type annotations, extracting private helpers,
   framework syntax boilerplate.
 - **🔴 Substantive Deviations (FLAG IMMEDIATELY)**:
@@ -88,14 +82,14 @@ Present to the user in this exact high-signal structure:
 # 🏁 Verification Report: <slug>
 
 ### 🚨 Substantive Deviations (Require User Review)
-<!-- List unauthorized architectural or contract changes not in plan.md. If none, state "None detected." -->
+<!-- List unauthorized architectural, file, or contract changes. If none, state "None detected." -->
 - [Location/Module]: <What changed> — <Difference from plan.md> — <Potential impact>
 
 ### ⚠️ Incomplete & Silent Degradation
 <!-- List any TODOs, stubs, mocks, or planned tasks lacking code diff. If none, state "None detected." -->
 - [Location/Task]: <Description of shortcut or omitted requirement>
 
-###  Acceptance Criteria & Fresh Evidence
+### ✅ Acceptance Criteria & Fresh Evidence
 <!-- Automated checks and requirement verification -->
 - **Lint & Typecheck**: `<command>` → `<exit code / summary>`
 - **Test Suite**: `<command>` → `<N passing, 0 failing>`
@@ -104,7 +98,7 @@ Present to the user in this exact high-signal structure:
   - [x] Scenario 2 ([Title]): `<Fresh command or diff evidence showing it works>`
 
 <details>
-<summary>🟢 Benign Implementation Details (Collapsed)</summary>
+<summary>🟢 Minor Implementation Details (Collapsed)</summary>
 - <List of internal glue / minor helper adjustments>
 </details>
 ```

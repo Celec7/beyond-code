@@ -48,11 +48,11 @@ Think ──[HARD-GATE]──→ Plan ──[HARD-GATE]──→ Build ──[HA
 
 **Think** — 反噪音追问门禁（禁微观命名/禁0.01%极端case）。Scope Check 自动拆分。产出 `spec.md`（含核心场景 Given/When/Then、核心数据契约 Invariants、Explicit Non-Goals 负向禁区与合理默认 Assumptions）。
 
-**Plan** — 架构与统一数据流概览 + bite-sized tasks（含精确文件路径与行为描述）。穷举 Implementation Bounds（文件、API、依赖、禁止项）。涵盖 Spec Coverage 自检与 Non-Goals 约束核对。
+**Plan** — 架构与统一数据流概览 + bite-sized tasks（含精确文件路径与原子化行为描述）。穷举 Implementation Bounds（文件、API、依赖、禁止项）。涵盖 Pre-Presentation 验证（Spec Coverage 自检、占位符扫描、Non-Goals 约束核对）。
 
-**Build** — Step 0 验证 Bounds。执行中严格遵守**第一性原理只读溯源协议**（禁止创可贴式盲目打补丁，从源头契约修复）。Deviation 实时记录；≥5 条或首个实质影响 deviation 触发 STOP。
+**Build** — Stage 0 验证 Bounds。执行中严格遵守**第一性原理只读溯源协议**（禁止创可贴式盲目打补丁，从源头契约修复）。分类记录偏差（Minor vs Substantive）；实质性偏差立即触发 STOP，良性偏差累计 ≥5 条触发审查。
 
-**Verify** — 派发独立 Auditor Subagent（无写代码偏见）进行三维对抗性审计。自动折叠良性胶水接缝，采用**异常优先汇报（Exception-First Reporting）**顶格披露实质性偏差与偷懒降级，并出示新鲜命令证据。验收通过后归档至 `.archive/`。
+**Verify** — 派发独立 Auditor Subagent（无写代码偏见）进行三维对抗性审计。自动折叠良性胶水接缝，采用**异常优先汇报（Exception-First Reporting）**顶格披露实质性偏差与偷懒降级，出示新鲜命令证据后进行验收归档。
 
 ## 工作目录结构
 

@@ -2,37 +2,25 @@
 name: beyond-code-plan
 description: >
   Use when designing architecture and writing the implementation plan,
-  after spec.md is confirmed. Covers Architecture Overview, bite-sized
-  task format, Implementation Bounds, Spec Coverage Self-Review, and
-  Placeholder Scan.
+  after spec.md is confirmed. Covers Architecture Overview, unified data flows,
+  bite-sized task format, Implementation Bounds, and pre-presentation validation.
 ---
 
 # Terminology Reference
 
-This skill uses RFC 2119 keywords:
+This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`.
 
-| Keyword | Meaning |
-|---------|---------|
-| MUST / REQUIRED | Absolute obligation. |
-| MUST NOT | Absolute prohibition. |
-| NEVER | Zero-exception prohibition. |
-| HARD-GATE | Must pass before next stage. |
-| STOP | Cease current action. |
-| ONLY | Exclusive action — no other path permitted. |
-| MAY | Agent discretion. |
-| EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
+# Scope Constraint
 
-# HARD-GATE: No Code Before Plan Confirmed
-
-You MUST NOT write or modify ANY code. Your ONLY outputs are
-plan.md and gate.md updates. Implementation happens in the build
-stage AFTER this plan is confirmed.
+You MUST NOT write or modify ANY code. Your ONLY outputs in this stage are
+`plan.md` and `gate.md` updates. Implementation happens in the build stage
+AFTER this plan is confirmed.
 
 # Purpose
 
-Create plan.md — an exhaustive implementation plan that leaves the
-build agent zero room for interpretation. The build agent MUST be
-able to execute the plan without guessing.
+Create `plan.md` — an exhaustive implementation plan that leaves the
+build agent zero room for guesswork or ad-hoc deviation. The build agent MUST be
+able to execute the plan strictly within the declared bounds.
 
 # Stage 0: Gate Check
 
@@ -40,7 +28,8 @@ Read `.beyond-code/<slug>/gate.md`. Gate 1 MUST be cleared before
 proceeding. If not cleared, STOP and report: "Spec is not confirmed.
 Return to think stage."
 
-Read `.beyond-code/<slug>/spec.md`. The plan MUST cover every R.
+Read `.beyond-code/<slug>/spec.md`. The plan MUST cover every R, respect every
+Invariant, and avoid all Explicit Non-Goals.
 
 # Stage 1: Write Architecture Overview
 
@@ -59,7 +48,7 @@ List constraints every task inherits. Include exact values:
 versions, limits, naming rules, platform requirements. Copy verbatim
 from spec.md Constraints section.
 
-```
+```markdown
 > **Global Constraints** (every task inherits these):
 > - [constraint with exact value]
 ```
@@ -68,7 +57,7 @@ from spec.md Constraints section.
 
 Each task MUST follow this format exactly:
 
-```
+```markdown
 ## Task N: [Action-verb description]
 
 **Covers:** R1, R3
@@ -82,7 +71,7 @@ Each task MUST follow this format exactly:
 ```
 
 Task rules:
-- Each step MUST be completable in 2-5 minutes with one clear result
+- Steps MUST be atomic: each step focuses on a single file change or a single command with one verifiable output.
 - Code steps MUST specify the exact signatures involved (as declared
   in API Surface) plus a precise behavior description: the algorithm,
   control flow, and how each named edge case is handled. They MUST NOT
@@ -90,25 +79,20 @@ Task rules:
 - A behavior description MUST be specific: name which validation runs,
   which edge cases exist, and how each is handled. Vague hand-waving
   is a plan failure.
-- Command steps MUST include the exact command and expected output
-- The following are FORBIDDEN as step content: "TBD", "TODO",
-  "implement later", "add appropriate error handling", "add validation",
-  "handle edge cases", "Similar to Task N", "参考 Task N",
-  references to types or functions not defined in any task
-  Each substitutes vagueness for a precise behavior description —
-  these are plan failures — fix them before presenting.
+- Command steps MUST include the exact command and expected output.
+- Forbidden step content: "TBD", "TODO", "implement later", "add appropriate error handling",
+  "add validation", "handle edge cases", "Similar to Task N" (or equivalent in any language),
+  and references to types/functions not declared in any task.
 
 # Stage 4: Write Implementation Bounds
 
-Write the exhaustive boundary list. The build agent MUST NOT exceed
-these bounds:
+Write the exhaustive boundary list. The build agent MUST NOT exceed these bounds:
 
-```
+```markdown
 ## Implementation Bounds
 > BUILD AGENT: You MUST NOT touch any file, create any function,
 > add any import, or introduce any dependency NOT listed below.
-> If a step requires something not in this list, the plan is
-> broken — STOP and report, do not guess.
+> If a step requires something not in this list, STOP and report.
 
 ### File Inventory (exhaustive)
 | Path | Action (CREATE/MODIFY) | Purpose |
@@ -123,80 +107,68 @@ these bounds:
 |---------|---------|---------|
 
 ### Prohibited Actions
-- [ ] No file creation outside File Inventory
-- [ ] No function/class creation outside API Surface
-- [ ] No new dependency outside Dependencies list
-- [ ] No modification to files NOT in File Inventory
-- [ ] No change to existing public interfaces NOT in API Surface
-- [ ] No violation of Explicit Non-Goals or Invariants declared in spec.md
+The build agent MUST NOT:
+- Create files outside File Inventory
+- Create functions/classes outside API Surface
+- Add dependencies outside Dependencies list
+- Modify files NOT in File Inventory
+- Change existing public interfaces NOT in API Surface
+- Violate Explicit Non-Goals or Invariants declared in spec.md
 ```
 
-# Stage 5: Spec Coverage Self-Review
+# Stage 5: Pre-Presentation Validation
 
-Before presenting the plan, verify every spec R has ≥1 task:
+Before presenting the plan, run and pass all three validation checks:
 
-```
+### 5a. Spec & Non-Goals Coverage
+Verify every spec R has ≥1 task and no task breaches Non-Goals:
+```markdown
 ## Spec Coverage Self-Review
 | Requirement | Task(s) | Status |
 |-------------|---------|--------|
 | R1          | T1      | ✅     |
-| R2          | —       | ❌     |
+| R2          | T2      | ✅     |
 ```
+MUST NOT present the plan with any missing requirements.
 
-MUST NOT present the plan with any ❌ rows. Add tasks for missing
-requirements or revise the task mapping.
+### 5b. Placeholder Scan
+Ensure zero vague placeholders remain in `plan.md`:
+- "TBD": 0 instances
+- "TODO": 0 instances
+- "implement later": 0 instances
+- "add appropriate error handling": 0 instances
+- "add validation": 0 instances
+- "handle edge cases": 0 instances
+- All referenced types and signatures are fully declared.
 
-# Stage 6: Placeholder Scan
+### 5c. Bounds Cross-Validation
+- Every path in each task's Files field appears in File Inventory.
+- Every signature referenced in Consumes, Produces, or behavior descriptions appears in API Surface.
+- No task touches an undeclared file.
 
-Search plan.md for forbidden patterns — each marks a vague step that
-lacks a precise behavior description. Report results:
-
-```
-## Placeholder Scan
-- [ ] "TBD": 0 instances
-- [ ] "TODO": 0 instances
-- [ ] "implement later": 0 instances
-- [ ] "add appropriate error handling": 0 instances
-- [ ] "add validation": 0 instances
-- [ ] "handle edge cases": 0 instances
-- [ ] "Similar to Task": 0 instances
-- [ ] All types and functions referenced in tasks are defined in a task
-- [ ] Every code step gives exact signatures + a specific behavior
-      description (which validation, which edge cases, how handled)
-```
-
-# Stage 7: Cross-validate Bounds against Tasks
-
-For each task, verify:
-- Every path in the task's Files field appears in File Inventory
-- Every signature a task references — in its Consumes, Produces, or
-  behavior description — appears in API Surface or Dependencies
-- No task references a file NOT in File Inventory
-
-Fix any mismatch before presenting.
-
-# Stage 8: Present and Update gate.md
+# Stage 6: Present and Update gate.md
 
 Present the user with:
-1. The Architecture Overview
+1. The Architecture Overview & Data Flow
 2. A summary of tasks (count, order, dependencies)
 3. The Spec Coverage table
 4. The Implementation Bounds
 
 Wait for explicit confirmation.
 
-After confirmation, update gate.md:
-
-```
+After confirmation, update `gate.md`:
+```markdown
 ## Gate 2: Plan Ready
 - [x] plan.md created: `.beyond-code/<slug>/plan.md`
-- [x] Spec coverage self-review: N/N covered
-- [x] Placeholder scan: 0 found
+- [x] Pre-presentation validation passed
 - [x] User confirmed: <timestamp>
 - [x] Gate cleared
 ```
 
-Return to the beyond-code router.
+Then return to the `beyond-code` router.
 
-If "just do it": still write plan.md fully, mark Gate 2 as cleared,
-return to router. The plan MUST still pass self-review.
+If the user gave "just do it" / autonomous pipeline instruction:
+- Write `plan.md` fully with all bounds and tasks.
+- Ensure Pre-Presentation Validation passes completely.
+- Mark `gate.md` Gate 2 as cleared with timestamp.
+- Return to the router immediately to advance to the build stage.

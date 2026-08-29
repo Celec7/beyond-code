@@ -3,34 +3,23 @@ name: beyond-code-think
 description: >
   Use when clarifying requirements before coding, the user's intent
   is unclear, needs to narrow down what to build, or entering the think phase
-  of beyond-code. Covers Scope Check, First-Principles data contracts,
-  Negative-Space Non-Goals, Given/When/Then spec format, and gate.md management.
+  of beyond-code. Covers Scope Check, core data contracts,
+  Explicit Non-Goals, Given/When/Then spec format, and gate.md management.
 ---
 
 # Terminology Reference
 
-This skill uses RFC 2119 keywords:
+This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`.
 
-| Keyword | Meaning |
-|---------|---------|
-| MUST / REQUIRED | Absolute obligation. |
-| MUST NOT | Absolute prohibition. |
-| NEVER | Zero-exception prohibition. |
-| HARD-GATE | Must pass before next stage. |
-| STOP | Cease current action. |
-| ONLY | Exclusive action — no other path permitted. |
-| MAY | Agent discretion. |
-| EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
+# Scope Constraint
 
-# HARD-GATE: No Code Before Spec
-
-You MUST NOT write or modify ANY code. Your ONLY outputs are
-spec.md and gate.md. Implementation happens in the build stage.
+You MUST NOT write or modify ANY code. Your ONLY outputs in this stage are
+`spec.md` and `gate.md` updates. Implementation happens in the build stage.
 
 # Purpose
 
 Clarify user intent from **first principles**, establish clear data contracts,
-and carve out the **negative space (Non-Goals)** to prevent agent drift.
+and carve out the **negative space (Explicit Non-Goals)** to prevent agent drift.
 Capture the result in `spec.md` with verifiable acceptance criteria. Do NOT plan
 detailed file-by-file implementation tasks — that belongs to the plan stage.
 
@@ -61,11 +50,11 @@ the rest get summarized in the first spec's Module Breakdown table for later.
 
 If NO — proceed to Stage 2.
 
-# Stage 2: First-Principles Clarification (Anti-Noise Rule)
+# Stage 2: Foundational Clarification (Anti-Noise Rule)
 
 Clarifying questions MUST be high-leverage and focused on architecture/user intent.
 
-**STRICT PROHIBITIONS (NO NOISE)**:
+**Questioning prohibitions**:
 - **MUST NOT ask micro-implementation details**: Never ask about function names, variable naming, file organization, or internal library choices that the agent can decide in Plan.
 - **MUST NOT ask 0.01% extreme-edge cases**: Never derail discussion with ultra-rare failure permutations (e.g. power outage during atomic write). Address realistic edge cases via explicit **Assumptions**.
 
@@ -88,7 +77,9 @@ status: draft | confirmed
 
 ## 1. Core Scenarios & Acceptance Criteria
 
-### R1: [Description — MUST use concrete action verbs, NEVER "support", "integrate", "enhance", "optimize"]
+### R1: [Description — MUST use concrete action verbs]
+<!-- Banned vague verbs: support, integrate, enhance, optimize, handle, manage, process, facilitate, leverage, utilize -->
+<!-- Preferred concrete verbs: create, return, validate, reject, transform, emit, store, delete -->
 - **Given**: [Preconditions / initial state]
 - **When**: [Action or trigger event]
 - **Then**: [Observable, verifiable result]
@@ -154,4 +145,7 @@ When confirmed, update `gate.md` Gate 1:
 
 Then return to the `beyond-code` router.
 
-If the user says "just do it" / "proceed": write `spec.md` as draft, mark `gate.md` Gate 1 as cleared, and return to the router directly.
+If the user says "just do it" / "proceed" (Autonomous Pipeline):
+- Write `spec.md` with status `confirmed`.
+- Mark `gate.md` Gate 1 as cleared with timestamp.
+- Return to the router immediately to advance to the plan stage.

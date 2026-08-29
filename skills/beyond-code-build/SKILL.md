@@ -9,27 +9,16 @@ description: >
 
 # Terminology Reference
 
-This skill uses RFC 2119 keywords:
-
-| Keyword | Meaning |
-|---------|---------|
-| MUST / REQUIRED | Absolute obligation. |
-| MUST NOT | Absolute prohibition. |
-| NEVER | Zero-exception prohibition. |
-| HARD-GATE | Must pass before next stage. |
-| STOP | Cease current action. |
-| ONLY | Exclusive action — no other path permitted. |
-| MAY | Agent discretion. |
-| EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
+This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`.
 
 # Purpose
 
 Execute the task list from `plan.md` faithfully and rigorously.
 Stay strictly within the Implementation Bounds. When errors or gaps occur, diagnose
 the root cause from **first principles via read-only investigation** rather than
-applying blind symptom patches. Log substantive deviations in `gate.md`.
+applying blind symptom patches. Log minor and substantive deviations in `gate.md`.
 
-# Step 0: Gate Check and Bounds Validation
+# Stage 0: Gate Check and Bounds Validation
 
 Read `.beyond-code/<slug>/gate.md`. Gate 2 MUST be cleared. If not,
 STOP and report: "Plan is not confirmed. Return to plan stage."
@@ -42,22 +31,22 @@ Before writing ANY code, validate the Implementation Bounds:
    confirm all are in API Surface or Dependencies.
 3. If ANY mismatch: STOP. Report the mismatch to the user. Do NOT proceed.
 
-This validation MUST complete before Step 1 of Task 1.
+This validation MUST complete before Task 1 starts.
 
-# First-Principles Root-Cause Protocol (NO BLIND PATCHING)
+# First-Principles Root-Cause Protocol
 
-When a test fails, a build breaks, or an unexpected error occurs during task execution:
+When a test fails, a build breaks, or an unexpected error occurs during execution:
 
-**STRICT PROHIBITION**:
-- **MUST NOT immediately edit code to slap a "band-aid" (symptom patch)**: Never add ad-hoc `if (!x) return`, optional chaining `?.` to mask nulls, or speculative defensive wrappers in loops.
-- **MUST NOT invent fictitious 0.01% edge cases** down in consumer logic instead of fixing broken data flows upstream.
+**Prohibitions**:
+- **MUST NOT** immediately edit code to slap a "band-aid" (symptom patch): Never add ad-hoc `if (!x) return`, optional chaining `?.` to mask nulls, or speculative defensive wrappers in loops.
+- **MUST NOT** invent fictitious 0.01% edge cases down in consumer logic instead of fixing broken data flows upstream.
 
-**MANDATORY 3-STEP READ-ONLY INVESTIGATION**:
+**Mandatory 3-step investigation before any fix**:
 1. **Trace Upstream (只读溯源)**: Inspect callers and producers along the call chain to discover where invalid data or unexpected state was first introduced.
 2. **Contract Breakdown (契约审视)**: Check the data contracts defined in `spec.md` and `plan.md`. Is the issue caused by inconsistent data shapes assembled on-the-fly?
 3. **Fix at the Source (源头治理)**: Always fix the defect at the root producer/contract level, or unify the data flow. If this requires altering the agreed plan, log a substantive Deviation.
 
-# Step N: Execute Each Task
+# Stage 1: Execute Each Task
 
 Read `.beyond-code/config.yaml` for commit preferences (defaults to `per-task`).
 
@@ -65,13 +54,12 @@ For each task in `plan.md`, in order:
 1. Mark it in-progress in `gate.md`'s Task Execution table.
 2. Execute each step faithfully without shortcuts (NEVER leave `TODO`, `FIXME`, stubs, or mock shortcuts).
 3. Run verifications as specified — EVIDENCE BEFORE CLAIMS.
-4. After each action, check for Substantive Deviations:
-   - Touched files outside File Inventory?
-   - Altered public API signatures or contracts?
-   - Added unapproved dependencies?
-5. If yes → log as Deviation in `gate.md` immediately.
-6. Handle commit per config (`per-task`, `per-plan`, or `manual`).
-7. Mark task complete with commit hash.
+   **If a verification fails, apply the First-Principles Root-Cause Protocol above before making any fix.**
+4. After each action, classify any unscripted decisions:
+   - **Minor Deviation**: Internal implementation detail (e.g. private helper, local type). Log in `gate.md` and continue.
+   - **Substantive Deviation**: Touched files outside File Inventory, altered public API signatures, added unapproved packages, or changed data contracts. Log in `gate.md` AND immediately apply the threshold check.
+5. Handle commit per config (`per-task`, `per-plan`, or `manual`).
+6. Mark task complete with commit hash.
 
 When a task has `depends_on`: that dependency's initiative gate.md MUST show
 Gate 3 completed before starting.
@@ -81,25 +69,24 @@ Gate 3 completed before starting.
 Write to `gate.md` under the `## Deviations` section:
 
 ```markdown
-| Timestamp | Task | Deviation | Rationale |
-|-----------|------|-----------|-----------|
-| HH:MM     | T3   | Modified `src/types.ts` (not in plan) | Resolved circular contract dependency |
-| HH:MM     | T5   | Replaced `sync` with `async` queue | Upstream I/O contract required async stream |
+| Timestamp | Task | Level (Minor / Substantive) | Deviation | Rationale |
+|-----------|------|-----------------------------|-----------|-----------|
+| HH:MM     | T3   | Minor                       | Extracted internal `formatChunk` helper | Cleaner loop readability |
+| HH:MM     | T5   | Substantive                 | Modified `src/types.ts` (not in bounds) | Resolved circular contract dependency |
 ```
 
 Record BEFORE moving to the next step. Do not batch deviations.
 
 # Deviation Threshold
 
-If deviations accumulate to ≥5 total, OR the first deviation has
-substantive design impact (new interface, new dependency, changed
-data contract, out-of-bounds file modification): **STOP**.
-Present all accumulated deviations to the user:
+STOP and present deviations to the user when EITHER:
+- A **Substantive Deviation** occurs (stop immediately, even on the very first occurrence), OR
+- Minor deviations accumulate to ≥5 total.
 
 ```markdown
 Deviations from plan.md so far:
-| # | Task | Deviation | Rationale |
-|---|------|-----------|-----------|
+| # | Task | Level | Deviation | Rationale |
+|---|------|-------|-----------|-----------|
 [table]
 
 Options:
@@ -110,7 +97,7 @@ Options:
 Which?
 ```
 
-Do NOT continue until the user responds.
+Do NOT continue until the user responds (unless operating in an authorized autonomous pipeline without unhandled blockers).
 
 # Gap Recording
 
@@ -129,7 +116,7 @@ Before moving from one task to the next, verify:
 - `per-task` mode: `git log` confirms the recorded commit exists.
 - All step verifications produced actual positive evidence.
 
-# When All Tasks Are Done
+# Stage 2: Finalize Build
 
 Based on `config.yaml` `commit.when`:
 
@@ -144,7 +131,7 @@ Based on `config.yaml` `commit.when`:
 
 Update `gate.md` with final table state and present a concise summary:
 - Completed task list with commit hashes.
-- Substantive deviations logged (if any).
+- Deviations logged (if any).
 - Recorded gaps (if any).
 
 Return to the `beyond-code` router to enter the `verify` stage.
