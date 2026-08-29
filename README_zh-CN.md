@@ -20,6 +20,10 @@
 
 **穷举边界，禁止越界。** plan 必须列出 build agent 可以触碰的所有文件、函数、依赖。超出清单的一律是 deviation，累计触发用户审查。
 
+**第一性原理与只读溯源。** 遇到 Bug 或测试失败，严禁立即打盲目补丁或添加伪边界防御；必须沿调用链向上只读溯源，从根本契约与数据流源头治理。
+
+**独立审计与异常优先汇报。** Verify 阶段采用独立红队视角（无写代码记忆偏见），自动过滤良性实现细节，优先顶格呈报实质性擅自发挥与偷工减料。
+
 **证据，而非声称。** EVIDENCE BEFORE CLAIMS。禁止 "应该没问题"、"看起来对"，必须跑命令、看输出、再下结论。
 
 **用硬语言，不用软建议。** 全 skill 使用 RFC 2119 关键词（MUST, MUST NOT, NEVER, HARD-GATE, STOP）。跳过门禁 = 违反 skill。
@@ -35,21 +39,20 @@ npx skills add Cccc-owo/beyond-code
 ## 流程
 
 ```
-Think ──[HARD-GATE]──→ Plan ──[HARD-GATE]──→ Build ──[HARD-GATE]──→ Verify
-
+Think ──[HARD-GATE]──→ Plan ──[HARD-GATE]──→ Build ──[HARD-GATE]──→ Verify (Auditor)
   │                      │                       │                        │
-  └── spec.md            └── plan.md             └── commits +           └── 检查 +
-       (做什么 +              (怎么做 +                  deviations             验收 +
-        验收标准)             穷举边界)                 记录于 gate.md          归档)
+  └── spec.md            └── plan.md             └── commits +           └── 独立红队审计 +
+       (场景 + 契约 +          (架构 + 数据流 +           只读溯源 +               异常优先汇报 +
+        Explicit Non-Goals)    穷举边界 + tasks)          deviations              验收归档)
 ```
 
-**Think** — 一次一问。Scope Check 检测多子系统 feature，自动拆分为多个 initiative。产出 `spec.md`，Given/When/Then 格式，禁止模糊动词（"支持"、"增强"、"整合"）。
+**Think** — 反噪音追问门禁（禁微观命名/禁0.01%极端case）。Scope Check 自动拆分。产出 `spec.md`（含核心场景 Given/When/Then、核心数据契约 Invariants、Explicit Non-Goals 负向禁区与合理默认 Assumptions）。
 
-**Plan** — 架构概览 + bite-sized tasks（含精确文件路径、完整代码、预期命令输出）。穷举 Implementation Bounds（文件清单、API 清单、依赖清单、禁止行为）。自检 spec 覆盖 + 占位符扫描后呈现。
+**Plan** — 架构与统一数据流概览 + bite-sized tasks（含精确文件路径与行为描述）。穷举 Implementation Bounds（文件、API、依赖、禁止项）。涵盖 Spec Coverage 自检与 Non-Goals 约束核对。
 
-**Build** — Step 0 先验证 Bounds 无冲突。task 在边界内执行。Deviation 实时记录；≥5 条或首个实质影响 deviation 触发 STOP 并展示给用户。commit 行为尊重 config.yaml。
+**Build** — Step 0 验证 Bounds。执行中严格遵守**第一性原理只读溯源协议**（禁止创可贴式盲目打补丁，从源头契约修复）。Deviation 实时记录；≥5 条或首个实质影响 deviation 触发 STOP。
 
-**Verify** — 自动化检查 + EVIDENCE BEFORE CLAIMS。逐需求用户验收。完成归档至 `.archive/`。
+**Verify** — 派发独立 Auditor Subagent（无写代码偏见）进行三维对抗性审计。自动折叠良性胶水接缝，采用**异常优先汇报（Exception-First Reporting）**顶格披露实质性偏差与偷懒降级，并出示新鲜命令证据。验收通过后归档至 `.archive/`。
 
 ## 工作目录结构
 

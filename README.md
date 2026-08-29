@@ -20,6 +20,10 @@ These skills share a deeper issue: they trust the agent too much and rely on the
 
 **Plan exhaustively, execute within bounds.** The plan must list every file, function, and dependency the build agent may touch. Anything not in that list is a deviation — and deviations trigger review.
 
+**First-principles root cause diagnosis.** When errors or test failures arise, NEVER slap blind symptom patches or speculative edge-case guards. Trace callers upstream in read-only mode and fix the contract at the source.
+
+**Independent audit & exception-first reporting.** Verify uses an independent red-team perspective to audit diffs against specs. It collapses benign internal glue and prioritizes substantive deviations and silent degradation.
+
 **Evidence, not claims.** EVIDENCE BEFORE CLAIMS. No "should be fine." No extrapolation from old output. Run the command fresh, show the output, then make your claim.
 
 **The process uses hard language, not soft suggestions.** The skill suite uses RFC 2119 keywords (MUST, MUST NOT, NEVER, HARD-GATE, STOP) throughout. An agent that skips a gate violates the skill.
@@ -35,22 +39,21 @@ Triggered by natural language or manual invocation. Say "let's plan first", or t
 ## Flow
 
 ```
-Think ──[HARD-GATE]──→ Plan ──[HARD-GATE]──→ Build ──[HARD-GATE]──→ Verify
-
+Think ──[HARD-GATE]──→ Plan ──[HARD-GATE]──→ Build ──[HARD-GATE]──→ Verify (Auditor)
   │                      │                       │                        │
-  └── spec.md            └── plan.md             └── commits +           └── checks +
-       (what +                 (how +                  deviations              acceptance +
-        acceptance)            exhaustive              logged in               archive
-                               bounds)                 gate.md)
+  └── spec.md            └── plan.md             └── commits +           └── independent audit +
+       (scenarios +            (architecture +         read-only trace +       exception-first
+        contracts +             data flow +             deviations              report +
+        Non-Goals)              bounds + tasks)         logged in gate)         archive)
 ```
 
-**Think** — One question at a time. Scope Check detects multi-subsystem features and splits them into separate initiatives. Produces `spec.md` with Given/When/Then requirements. Vague verbs ("support", "integrate", "enhance") are forbidden.
+**Think** — Anti-noise questioning gate (no micro-implementation questions, no 0.01% extreme cases). Scope Check splits multi-subsystem initiatives. Produces `spec.md` with Given/When/Then scenarios, Core Data Contracts & Invariants, Explicit Non-Goals (negative space), and reasonable Assumptions.
 
-**Plan** — Architecture overview + bite-sized tasks with exact file paths, complete code, and expected command output. Exhaustive Implementation Bounds (File Inventory, API Surface, Dependencies, Prohibited Actions). Spec Coverage self-review + Placeholder Scan before presentation.
+**Plan** — Architecture & unified data flow overview + bite-sized tasks with exact signatures and behavior descriptions. Exhaustive Implementation Bounds. Spec Coverage self-review and Non-Goals compliance check.
 
-**Build** — Step 0 validates Implementation Bounds. Tasks execute within bounds. Deviations logged in real-time; ≥5 or first substantive deviation triggers STOP and user review. Commit behavior respects config.yaml (per-task / per-plan / manual).
+**Build** — Step 0 validates Implementation Bounds. Enforces the **First-Principles Root-Cause Protocol** (no ad-hoc symptom patching, upstream source fix). Deviations logged in real-time; ≥5 or first substantive deviation triggers STOP and user review.
 
-**Verify** — Automated checks with EVIDENCE BEFORE CLAIMS. Per-requirement user acceptance. Archive completed initiatives to `.archive/`.
+**Verify** — Spawns an independent Auditor Subagent (isolated from builder bias) for 3D adversarial auditing. Filters benign seams and generates an **Exception-First Verification Report** highlighting substantive deviations, silent degradation, and fresh command evidence before user acceptance.
 
 ## Directory Structure
 

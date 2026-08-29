@@ -92,7 +92,8 @@ Commit behavior depends on `.beyond-code/config.yaml`:
 | Timestamp | Task | Deviation | Rationale |
 
 ## Gate 4: Verification
-- [ ] Automated checks passed
+- [ ] Automated checks passed (with auditor evidence)
+- [ ] Substantive deviations: [None | User Approved]
 - [ ] R<N>: user confirmed
 
 ## Gaps

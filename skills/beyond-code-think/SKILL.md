@@ -2,9 +2,9 @@
 name: beyond-code-think
 description: >
   Use when clarifying requirements before coding, the user's intent
-  is unclear, needs to narrow down what to build through questions,
-  or entering the think phase of beyond-code. Covers Scope Check,
-  Given/When/Then spec format, and gate.md management.
+  is unclear, needs to narrow down what to build, or entering the think phase
+  of beyond-code. Covers Scope Check, First-Principles data contracts,
+  Negative-Space Non-Goals, Given/When/Then spec format, and gate.md management.
 ---
 
 # Terminology Reference
@@ -29,10 +29,10 @@ spec.md and gate.md. Implementation happens in the build stage.
 
 # Purpose
 
-Clarify user intent through focused questioning. Capture the result
-in spec.md with verifiable acceptance criteria. Do NOT plan
-architecture or implementation — that comes after the user confirms
-this spec.
+Clarify user intent from **first principles**, establish clear data contracts,
+and carve out the **negative space (Non-Goals)** to prevent agent drift.
+Capture the result in `spec.md` with verifiable acceptance criteria. Do NOT plan
+detailed file-by-file implementation tasks — that belongs to the plan stage.
 
 # Stage 0: Gate Check
 
@@ -57,67 +57,67 @@ any spec. Present a Module Breakdown:
 ```
 
 Each module becomes a separate initiative. Start with the first one;
-the rest get summarized in the first spec's Module Breakdown table
-for later.
+the rest get summarized in the first spec's Module Breakdown table for later.
 
-If NO — proceed to clarifying questions.
+If NO — proceed to Stage 2.
 
-# Stage 2: Clarifying Questions
+# Stage 2: First-Principles Clarification (Anti-Noise Rule)
 
-Ask one question at a time. Wait for the answer.
-Each question builds on the last answer, not a predefined list.
+Clarifying questions MUST be high-leverage and focused on architecture/user intent.
 
-Shape every question to expose a design choice, not fill a blank.
-Include your understanding, present concrete options, state your
-recommendation with reasoning.
+**STRICT PROHIBITIONS (NO NOISE)**:
+- **MUST NOT ask micro-implementation details**: Never ask about function names, variable naming, file organization, or internal library choices that the agent can decide in Plan.
+- **MUST NOT ask 0.01% extreme-edge cases**: Never derail discussion with ultra-rare failure permutations (e.g. power outage during atomic write). Address realistic edge cases via explicit **Assumptions**.
 
-Wrong:
-"Which database should we use?"
-
-Right:
-"Persistence — I see two paths. SQLite for zero-setup single-file
-simplicity, good if this is a local tool. Postgres if you expect
-concurrent writes or need JSONB queries. I'd start with SQLite and
-swap later if needed. Which direction fits?"
-
-Do NOT invent scenarios. If an answer is vague, do NOT fill gaps
-yourself — ask a follow-up or offer your best interpretation and
-ask if it is correct.
-
-If something is technically impossible, say so directly. Explain
-the constraint and offer the closest feasible alternative.
+**When you do need to ask**:
+- Ask at most ONE high-impact question at a time.
+- State your understanding, present 2 concrete choices, and provide a recommended default.
+- If user input is largely sufficient, formulate reasonable defaults as **Assumptions** in `spec.md` rather than stalling progress with unnecessary questions.
 
 # Stage 3: Write spec.md
 
-When the picture is clear, write spec.md:
+Generate `.beyond-code/<slug>/spec.md` using this expressive, high-leverage template:
 
-```
+```markdown
 ---
 slug: <initiative-slug>
 status: draft | confirmed
 ---
 
-# Feature: [one-line description]
+# Feature: [One-line summary of capability]
 
-## R1: [description — MUST use action verbs, MUST NOT use "support", "integrate", "enhance", "optimize"]
+## 1. Core Scenarios & Acceptance Criteria
 
-**Given** [precondition]
-**When** [trigger]
-**Then** [observable result — MUST be manually verifiable]
+### R1: [Description — MUST use concrete action verbs, NEVER "support", "integrate", "enhance", "optimize"]
+- **Given**: [Preconditions / initial state]
+- **When**: [Action or trigger event]
+- **Then**: [Observable, verifiable result]
 
-## Constraints
+### R2: ...
 
-- [hard boundary]
+## 2. Core Data Contracts & Invariants (First Principles)
+<!-- Define key entities, schemas, and immutable system invariants -->
+- **Data Flow**: <Source / producer> → <Unified schema / DTO> → <Consumer>
+- **Invariants**:
+  - [Invariant 1: e.g. "Timestamps MUST be UTC ISO-8601 strings"]
+  - [Invariant 2: e.g. "All errors MUST return structured { code, message } object"]
+
+## 3. Explicit Non-Goals (Negative Space)
+<!-- What this initiative deliberately will NOT do, to prevent agent hallucination & scope creep -->
+- ⛔ Will NOT: <e.g. Support multi-tenant isolation in this version>
+- ⛔ Will NOT: <e.g. Alter existing database migrations>
+
+## 4. Assumptions
+<!-- Reasonable defaults inferred by the agent; user can adjust before confirmation -->
+- [Assumption 1: e.g. "CLI output defaults to human-readable text unless --json is passed"]
+
+## 5. Constraints
+- [Hard architectural or platform boundary]
 ```
-
-Every R MUST:
-- Use concrete action verbs (e.g. "display", "call", "respond", "log", "block")
-- Have a manually verifiable Then clause
-- NOT use vague verbs ("support", "integrate", "enhance", "optimize")
 
 If the Scope Check identified sub-systems, append:
 
-```
+```markdown
 ## Module Breakdown
 
 | Module | Initiative Slug | depends_on |
@@ -128,7 +128,7 @@ If the Scope Check identified sub-systems, append:
 
 Append to Gate 1:
 
-```
+```markdown
 ## Gate 1: Spec Confirmed
 - [x] spec.md created: `.beyond-code/<slug>/spec.md`
 - [ ] User confirmed
@@ -136,24 +136,22 @@ Append to Gate 1:
 
 # Stage 5: Present and get confirmation
 
-Present a mapping of what you heard to what you wrote. List each key
-point the user made and which R it maps to in spec.md:
+Present a clean, high-signal summary of what was captured:
+1. **Core Capabilities (R1, R2...)**
+2. **Explicit Non-Goals (What we are NOT doing)**
+3. **Key Assumptions & Invariants**
 
-> - You mentioned X → captured as R1
-> - You want Y → captured as R2, constraint added
->
-> Does this mapping look accurate?
+Ask:
+> "Does this spec match your intent? Please confirm to proceed to Plan, or let me know what to adjust."
 
-Set spec.md status to `draft`. Change to `confirmed` ONLY after the
-user agrees the spec is correct.
+Set `spec.md` status to `draft`. Change to `confirmed` ONLY after the user agrees.
 
-When confirmed, update gate.md Gate 1:
-```
+When confirmed, update `gate.md` Gate 1:
+```markdown
 - [x] User confirmed: <timestamp>
 - [x] Gate cleared
 ```
 
-Then return to the beyond-code router.
+Then return to the `beyond-code` router.
 
-If the user says "just do it": write spec.md as draft, update gate.md
-Gate 1 as cleared, and return to the router directly.
+If the user says "just do it" / "proceed": write `spec.md` as draft, mark `gate.md` Gate 1 as cleared, and return to the router directly.

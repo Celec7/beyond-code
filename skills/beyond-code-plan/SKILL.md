@@ -46,7 +46,8 @@ Read `.beyond-code/<slug>/spec.md`. The plan MUST cover every R.
 
 Write 3-5 paragraphs describing:
 - Key pieces and their responsibilities
-- How they connect
+- Core data flow & contract shapes (how entities transform from producer to consumer without ad-hoc assembling)
+- How components connect
 - What existing modules are touched and how
 - Order of operations for the primary code path
 
@@ -127,6 +128,7 @@ these bounds:
 - [ ] No new dependency outside Dependencies list
 - [ ] No modification to files NOT in File Inventory
 - [ ] No change to existing public interfaces NOT in API Surface
+- [ ] No violation of Explicit Non-Goals or Invariants declared in spec.md
 ```
 
 # Stage 5: Spec Coverage Self-Review
