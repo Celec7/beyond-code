@@ -24,6 +24,11 @@ This skill suite uses RFC 2119 keywords and structural definitions:
 | SHOULD / SHOULD NOT | Strong guidance — deviate only with stated reason. |
 | MAY / OPTIONAL | Agent discretion. |
 | EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
+| Initiative | The entire end-to-end unit of work (`.beyond-code/<slug>/`). |
+| Spec | Requirements, data contracts, and Non-Goals (`spec.md`). |
+| Implementation Plan (Plan) | Architecture, data flow, bounds, and tasks (`plan.md`). |
+| Task | An atomic execution unit with `Depends On` metadata in plan.md. |
+| Step | An individual concrete action or verification command within a task. |
 | Minor Deviation | Implementation detail not in plan.md that does not alter public interfaces, file inventory, data contracts, or dependencies (e.g. private helper, local type). Log in gate.md; non-blocking. |
 | Substantive Deviation | Action that alters public APIs, touches files outside File Inventory, adds unapproved dependencies, changes data contracts, or violates spec Non-Goals/Invariants. Log in gate.md AND triggers immediate STOP. |
 

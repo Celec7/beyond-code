@@ -3,12 +3,17 @@ name: beyond-code-plan
 description: >
   Use when designing architecture and writing the implementation plan,
   after spec.md is confirmed. Covers Architecture Overview, unified data flows,
-  bite-sized task format, Implementation Bounds, and pre-presentation validation.
+  bite-sized task format with dependency topology, Implementation Bounds, and pre-presentation validation.
 ---
 
 # Terminology Reference
 
-This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`.
+This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`:
+- **Initiative**: The entire end-to-end unit of work (`.beyond-code/<slug>/`).
+- **Spec**: Requirements, data contracts, and Non-Goals (`spec.md`).
+- **Implementation Plan (Plan)**: Architecture, bounds, and ordered tasks (`plan.md`).
+- **Task**: An atomic execution unit within a plan, with explicit `Depends On` metadata.
+- **Step**: An individual concrete action or verification command within a task.
 
 # Scope Constraint
 
@@ -20,7 +25,7 @@ AFTER this plan is confirmed.
 
 Create `plan.md` — an exhaustive implementation plan that leaves the
 build agent zero room for guesswork or ad-hoc deviation. The build agent MUST be
-able to execute the plan strictly within the declared bounds.
+able to execute the tasks strictly along the declared dependency topology and bounds.
 
 # Stage 0: Gate Check
 
@@ -53,15 +58,16 @@ from spec.md Constraints section.
 > - [constraint with exact value]
 ```
 
-# Stage 3: Write Tasks
+# Stage 3: Write Tasks with Dependency Topology
 
-Each task MUST follow this format exactly:
+Each task MUST follow this format exactly, including explicit **Depends On** topology metadata:
 
 ```markdown
 ## Task N: [Action-verb description]
 
 **Covers:** R1, R3
 **Files:** Create: `exact/path/a.py`; Modify: `exact/path/b.py:42-60`
+**Depends On:** [Task X, Task Y]  <!-- Declare explicit task dependencies; use [] if independent -->
 **Consumes:** [upstream interface signatures — exact names and types]
 **Produces:** [downstream interface signatures — exact names and types]
 
@@ -70,15 +76,10 @@ Each task MUST follow this format exactly:
 - [ ] Step N: Commit
 ```
 
-Task rules:
+Task & Topology rules:
+- **Dependency DAG**: If Task B requires components, types, or files produced by Task A, Task B MUST declare `**Depends On:** [Task A]`. The task list MUST form a valid Directed Acyclic Graph (DAG).
 - Steps MUST be atomic: each step focuses on a single file change or a single command with one verifiable output.
-- Code steps MUST specify the exact signatures involved (as declared
-  in API Surface) plus a precise behavior description: the algorithm,
-  control flow, and how each named edge case is handled. They MUST NOT
-  contain the literal function body — the build agent writes that.
-- A behavior description MUST be specific: name which validation runs,
-  which edge cases exist, and how each is handled. Vague hand-waving
-  is a plan failure.
+- Code steps MUST specify the exact signatures involved (as declared in API Surface) plus a precise behavior description.
 - Command steps MUST include the exact command and expected output.
 - Forbidden step content: "TBD", "TODO", "implement later", "add appropriate error handling",
   "add validation", "handle edge cases", "Similar to Task N" (or equivalent in any language),
@@ -150,7 +151,7 @@ Ensure zero vague placeholders remain in `plan.md`:
 
 Present the user with:
 1. The Architecture Overview & Data Flow
-2. A summary of tasks (count, order, dependencies)
+2. A summary of tasks (count, DAG execution order, dependencies)
 3. The Spec Coverage table
 4. The Implementation Bounds
 
@@ -168,7 +169,7 @@ After confirmation, update `gate.md`:
 Then return to the `beyond-code` router.
 
 If the user gave "just do it" / autonomous pipeline instruction:
-- Write `plan.md` fully with all bounds and tasks.
+- Write `plan.md` fully with all bounds, tasks, and dependency topology.
 - Ensure Pre-Presentation Validation passes completely.
 - Mark `gate.md` Gate 2 as cleared with timestamp.
 - Return to the router immediately to advance to the build stage.

@@ -3,17 +3,21 @@ name: beyond-code-build
 description: >
   Use when executing a confirmed plan, building features task by
   task, tracking progress through gate.md, or entering the build
-  phase of beyond-code. Covers bounds validation, first-principles
-  read-only root-cause diagnosis, task execution, deviation logging, and gap tracking.
+  phase of beyond-code. Covers bounds validation, topological task ordering,
+  first-principles read-only root-cause diagnosis, task execution, deviation logging, and gap tracking.
 ---
 
 # Terminology Reference
 
-This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`.
+This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`:
+- **Initiative**: The entire end-to-end unit of work (`.beyond-code/<slug>/`).
+- **Plan**: The architecture, bounds, and tasks specification (`plan.md`).
+- **Task**: An atomic execution unit within a plan, with explicit `Depends On` metadata.
+- **Step**: An individual concrete action or verification command within a task.
 
 # Purpose
 
-Execute the task list from `plan.md` faithfully and rigorously.
+Execute the task list from `plan.md` faithfully, rigorously, and in topological dependency order.
 Stay strictly within the Implementation Bounds. When errors or gaps occur, diagnose
 the root cause from **first principles via read-only investigation** rather than
 applying blind symptom patches. Log minor and substantive deviations in `gate.md`.
@@ -46,11 +50,14 @@ When a test fails, a build breaks, or an unexpected error occurs during executio
 2. **Contract Breakdown (契约审视)**: Check the data contracts defined in `spec.md` and `plan.md`. Is the issue caused by inconsistent data shapes assembled on-the-fly?
 3. **Fix at the Source (源头治理)**: Always fix the defect at the root producer/contract level, or unify the data flow. If this requires altering the agreed plan, log a substantive Deviation.
 
-# Stage 1: Execute Each Task
+# Stage 1: Execute Each Task in Topological Order
 
 Read `.beyond-code/config.yaml` for commit preferences (defaults to `per-task`).
 
-For each task in `plan.md`, in order:
+Execute tasks following their declared DAG order:
+- **Dependency Check**: Before starting Task N, check its `**Depends On:** [Task X, ...]`. All prerequisites in `gate.md` MUST show completed with commit hashes (or marked complete). NEVER execute a blocked task out of order.
+
+For each task in `plan.md`:
 1. Mark it in-progress in `gate.md`'s Task Execution table.
 2. Execute each step faithfully without shortcuts (NEVER leave `TODO`, `FIXME`, stubs, or mock shortcuts).
 3. Run verifications as specified — EVIDENCE BEFORE CLAIMS.
@@ -61,7 +68,7 @@ For each task in `plan.md`, in order:
 5. Handle commit per config (`per-task`, `per-plan`, or `manual`).
 6. Mark task complete with commit hash.
 
-When a task has `depends_on`: that dependency's initiative gate.md MUST show
+When an initiative has `depends_on`: that dependency's initiative gate.md MUST show
 Gate 3 completed before starting.
 
 # Deviation Recording
