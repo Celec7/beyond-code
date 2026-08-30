@@ -2,22 +2,21 @@
 name: beyond-code-verify
 description: >
   Use when verifying implementation results, running automated checks,
-  performing adversarial independent audits, or entering the verify phase
-  of beyond-code. Covers exception-first verification, semantic seam analysis,
-  anti-laziness scans, automated evidence, and archiving.
+  offering adversarial independent audits, or entering the verify phase
+  of beyond-code. Covers exception-first verification, blast radius analysis,
+  semantic seam analysis, anti-laziness scans, automated evidence, and lean archiving.
 ---
 
-# Terminology Reference
+# Scope & Context
 
-This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`.
+Follow the global terminology, deviation standards, and gate rules defined in `beyond-code/SKILL.md`.
 
 # Purpose
 
 Verify that the implementation matches the agreed spec and plan with zero
 silent compromises. Offer the user an independent auditor option (via subagent)
-to audit the actual code diff against spec and plan, filter benign implementation seams,
-and generate an **Exception-First Verification Report** highlighting substantive deviations,
-silent degradation, and concrete evidence.
+to audit the code diff against spec and plan, evaluate blast radius, filter benign implementation seams,
+and generate an **Exception-First Verification Report**.
 
 # Stage 0: Gate Check
 
@@ -41,10 +40,10 @@ Present the baseline test status and ask the user:
 - **If User confirms (e.g. "yes", "好", "用", "audit", "check")**:
   - The agent **MUST** explicitly call the `subagent` tool. NEVER skip or self-audit under this branch.
   - Inputs to the auditor subagent MUST strictly contain ONLY:
-    1. `.beyond-code/<slug>/spec.md` (agreed requirements, contracts & Non-Goals)
-    2. `.beyond-code/<slug>/plan.md` (architecture, bounds & tasks)
+    1. `.beyond-code/<slug>/spec.md` (requirements, contracts & Non-Goals)
+    2. `.beyond-code/<slug>/plan.md` (trade-offs, bounds & tasks)
     3. `git diff` against the starting base commit.
-  - The subagent prompt MUST instruct the child agent to run the 3-dimensional scan (Sections 3.1 - 3.3 below) and format its response as the Exception-First Verification Report (Stage 2).
+  - The subagent prompt MUST instruct the child agent to execute the 3-dimensional scan (Sections 3.1 - 3.3 below) and format its response as the Exception-First Verification Report (Stage 2).
   - Adopt the subagent's audit findings directly.
 
 - **If User declines or skips (e.g. "no", "不用", "direct", or during autonomous pipeline)**:
@@ -52,51 +51,53 @@ Present the baseline test status and ask the user:
 
 ### 3. The 3-Dimensional Audit Scan
 
-#### 3.1. Tooling & Test Coverage Evidence
-Confirm all test suites and linter passes with raw outputs.
+#### 3.1. Blast Radius & Scope Analysis
+Categorize modified files and identify external impacts:
+- **Core Logic**: Main business functions altered.
+- **Contract & Types**: Schema / DTO / interface changes.
+- **Support / Tests**: Auxiliary test cases and fixtures.
+- **External Surface Impact**: State if any external callers or public APIs are affected.
 
 #### 3.2. Anti-Laziness & Silent Degradation Scan
 Search `git diff` for:
 - Lingering `TODO`, `FIXME`, `STUB`, `MOCK`, or empty functions.
-- Oversimplified logic (e.g. replacing a planned concurrent queue with a simple loop,
-  swallowing errors silently via empty `catch` blocks, hardcoding test data).
-- Any scenario in `spec.md` or task in `plan.md` that lacks corresponding implementation in diff.
+- Oversimplified logic (e.g. replacing a planned concurrent queue with a simple loop, swallowing errors silently via empty `catch` blocks, hardcoding test data).
+- Any scenario in `spec.md` or task in `plan.md` lacking corresponding implementation in diff.
 
 #### 3.3. Semantic Seam & Substantive Deviation Analysis
 Distinguish between benign code realities and unauthorized agent discretion:
 - **🟢 Minor Deviations / Benign Seams (Accept & Collapse)**:
-  Internal helper variables, TypeScript type annotations, extracting private helpers,
-  framework syntax boilerplate.
+  Internal helper variables, TypeScript type annotations, extracting private helpers, framework syntax boilerplate.
 - **🔴 Substantive Deviations (FLAG IMMEDIATELY)**:
-  - Altered public API signatures / exports not in `plan.md`.
-  - Introduced undeclared external packages or altered global configuration.
-  - Changed error handling semantics or architectural invariants.
-  - Modified files strictly outside `Implementation Bounds`.
+  Altered public API signatures, introduced undeclared packages, modified out-of-bounds files, or violated Non-Goals/Invariants.
 
 # Stage 2: Exception-First Verification Report
 
-The verification report MUST prioritize anomalies over routine confirmations.
-Present to the user in this exact high-signal structure:
+Present the verification report in this high-signal, self-descriptive structure:
 
 ```markdown
 # 🏁 Verification Report: <slug>
 
+### 🎯 Blast Radius & Affected Surface
+- **Core Logic**: `<list of primary modified files>`
+- **Contracts / Types**: `<list of modified schemas/interfaces>`
+- **Tests & Tooling**: `<list of test files>`
+- **External Breaking Impact**: [None | Description of external API changes]
+
 ### 🚨 Substantive Deviations (Require User Review)
 <!-- List unauthorized architectural, file, or contract changes. If none, state "None detected." -->
-- [Location/Module]: <What changed> — <Difference from plan.md> — <Potential impact>
+- [Module/File]: <What changed> — <Difference from plan.md> — <Potential impact>
 
 ### ⚠️ Incomplete & Silent Degradation
 <!-- List any TODOs, stubs, mocks, or planned tasks lacking code diff. If none, state "None detected." -->
-- [Location/Task]: <Description of shortcut or omitted requirement>
+- [Task/Module]: <Description of shortcut or omitted requirement>
 
-### ✅ Acceptance Criteria & Fresh Evidence
-<!-- Automated checks and requirement verification -->
+### ✅ Requirements & Evidence
 - **Audit Mode**: [Independent Subagent Auditor | Direct Verifier]
-- **Lint & Typecheck**: `<command>` → `<exit code / summary>`
-- **Test Suite**: `<command>` → `<N passing, 0 failing>`
+- **Baseline Checks**: `<lint/test commands>` → `<all passing summary>`
 - **Scenarios Verified**:
-  - [x] Scenario 1 ([Title]): `<Fresh command or diff evidence showing it works>`
-  - [x] Scenario 2 ([Title]): `<Fresh command or diff evidence showing it works>`
+  - [x] [Scenario Title A]: `<Fresh command or diff evidence showing it works>`
+  - [x] [Scenario Title B]: `<Fresh command or diff evidence showing it works>`
 
 <details>
 <summary>🟢 Minor Implementation Details (Collapsed)</summary>
@@ -119,22 +120,27 @@ Update `gate.md`:
 
 ```markdown
 ## Gate 4: Verification
-- [ ] Automated checks passed (with auditor evidence)
+- [ ] Automated baseline checks passed (with raw evidence)
+- [ ] Independent Auditor Subagent: [Executed | Skipped by User]
 - [ ] Substantive deviations: [None | User Approved]
-- [ ] R<N>: user confirmed
+- [ ] Requirements verified: user confirmed
 ```
 
-# Stage 4: Archive
+# Stage 4: Lean Archive & Summary Synthesis
 
 When user explicitly confirms acceptance:
 
 1. Create `.beyond-code/.archive/` if needed.
-2. MOVE the entire initiative directory to `.beyond-code/.archive/<slug>/`.
-3. Verify the move:
+2. Generate a lean `summary.md` inside `.beyond-code/<slug>/`:
+   - Summary of delivered capabilities.
+   - Key trade-offs made.
+   - Remaining Gaps / Out-of-scope items.
+3. MOVE the entire initiative directory to `.beyond-code/.archive/<slug>/`.
+4. Verify the move:
 ```bash
 ls .beyond-code/.archive/<slug>/
 ```
-4. Update `gate.md`:
+5. Update `gate.md`:
 ```markdown
 ## Archive
 - [x] Moved to .beyond-code/.archive/<slug>/

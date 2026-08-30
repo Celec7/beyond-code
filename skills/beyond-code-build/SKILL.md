@@ -4,23 +4,20 @@ description: >
   Use when executing a confirmed plan, building features task by
   task, tracking progress through gate.md, or entering the build
   phase of beyond-code. Covers bounds validation, topological task ordering,
-  first-principles read-only root-cause diagnosis, task execution, deviation logging, and gap tracking.
+  first-principles root-cause diagnosis, clean Git hygiene, and deviation logging.
 ---
 
-# Terminology Reference
+# Scope & Context
 
-This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`:
-- **Initiative**: The entire end-to-end unit of work (`.beyond-code/<slug>/`).
-- **Plan**: The architecture, bounds, and tasks specification (`plan.md`).
-- **Task**: An atomic execution unit within a plan, with explicit `Depends On` metadata.
-- **Step**: An individual concrete action or verification command within a task.
+You MUST execute tasks strictly from `.beyond-code/<slug>/plan.md` within the
+Implementation Bounds. Follow the global rules and definitions in `beyond-code/SKILL.md`.
 
 # Purpose
 
-Execute the task list from `plan.md` faithfully, rigorously, and in topological dependency order.
-Stay strictly within the Implementation Bounds. When errors or gaps occur, diagnose
-the root cause from **first principles via read-only investigation** rather than
-applying blind symptom patches. Log minor and substantive deviations in `gate.md`.
+Execute the tasks from `plan.md` faithfully, rigorously, and in topological dependency order.
+Stay strictly within the Implementation Bounds. When errors occur, diagnose root causes
+via **read-only investigation** from first principles. Maintain clean Git history free of
+internal process code names.
 
 # Stage 0: Gate Check and Bounds Validation
 
@@ -30,12 +27,11 @@ STOP and report: "Plan is not confirmed. Return to plan stage."
 Read `.beyond-code/<slug>/plan.md`.
 
 Before writing ANY code, validate the Implementation Bounds:
-1. For each task's Files field: confirm all paths are in File Inventory.
-2. For each task's declared signatures (Consumes, Produces, exported APIs):
-   confirm all are in API Surface or Dependencies.
+1. For each task's Files field: confirm all paths exist in File Inventory.
+2. For each task's declared signatures: confirm all exist in API Surface or Dependencies.
 3. If ANY mismatch: STOP. Report the mismatch to the user. Do NOT proceed.
 
-This validation MUST complete before Task 1 starts.
+This validation MUST complete before the first task starts.
 
 # First-Principles Root-Cause Protocol
 
@@ -48,38 +44,42 @@ When a test fails, a build breaks, or an unexpected error occurs during executio
 **Mandatory 3-step investigation before any fix**:
 1. **Trace Upstream (只读溯源)**: Inspect callers and producers along the call chain to discover where invalid data or unexpected state was first introduced.
 2. **Contract Breakdown (契约审视)**: Check the data contracts defined in `spec.md` and `plan.md`. Is the issue caused by inconsistent data shapes assembled on-the-fly?
-3. **Fix at the Source (源头治理)**: Always fix the defect at the root producer/contract level, or unify the data flow. If this requires altering the agreed plan, log a substantive Deviation.
+3. **Fix at the Source (源头治理)**: Always fix the defect at the root producer/contract level, or unify the data flow. If this requires altering the agreed plan, log a Substantive Deviation.
 
 # Stage 1: Execute Each Task in Topological Order
 
 Read `.beyond-code/config.yaml` for commit preferences (defaults to `per-task`).
 
 Execute tasks following their declared DAG order:
-- **Dependency Check**: Before starting Task N, check its `**Depends On:** [Task X, ...]`. All prerequisites in `gate.md` MUST show completed with commit hashes (or marked complete). NEVER execute a blocked task out of order.
+- **Dependency Check**: Before starting a task, check its `**Depends On:**`. All prerequisites in `gate.md` MUST show completed with commit hashes (or marked complete). NEVER execute a blocked task out of order.
 
 For each task in `plan.md`:
-1. Mark it in-progress in `gate.md`'s Task Execution table.
+1. Mark it `🔄 In-Progress` in `gate.md`'s Task Execution table.
 2. Execute each step faithfully without shortcuts (NEVER leave `TODO`, `FIXME`, stubs, or mock shortcuts).
 3. Run verifications as specified — EVIDENCE BEFORE CLAIMS.
    **If a verification fails, apply the First-Principles Root-Cause Protocol above before making any fix.**
 4. After each action, classify any unscripted decisions:
    - **Minor Deviation**: Internal implementation detail (e.g. private helper, local type). Log in `gate.md` and continue.
    - **Substantive Deviation**: Touched files outside File Inventory, altered public API signatures, added unapproved packages, or changed data contracts. Log in `gate.md` AND immediately apply the threshold check.
-5. Handle commit per config (`per-task`, `per-plan`, or `manual`).
-6. Mark task complete with commit hash.
+5. Handle commit per config (`per-task`, `per-plan`, or `manual`) following **Git Hygiene Rules** below.
+6. Mark task `✅ Done` in `gate.md` with commit hash.
 
-When an initiative has `depends_on`: that dependency's initiative gate.md MUST show
-Gate 3 completed before starting.
+# Git Hygiene Rules (Zero Internal Code Names)
+
+When creating Git commits:
+- Use standard Conventional Commits or repo-native conventions (e.g. `feat(auth): implement JWT refresh token endpoint`).
+- **MUST NOT leak internal process markers**: NEVER include `T1`, `Task 1`, `R1`, `Scenario 2`, `beyond-code`, `gate.md`, or initiative slugs in commit messages.
+- Commits must read like high-quality commits authored by an expert human software engineer.
 
 # Deviation Recording
 
-Write to `gate.md` under the `## Deviations` section:
+Write to `gate.md` under the `## Deviations` section using human-first rationales:
 
 ```markdown
-| Timestamp | Task | Level (Minor / Substantive) | Deviation | Rationale |
-|-----------|------|-----------------------------|-----------|-----------|
-| HH:MM     | T3   | Minor                       | Extracted internal `formatChunk` helper | Cleaner loop readability |
-| HH:MM     | T5   | Substantive                 | Modified `src/types.ts` (not in bounds) | Resolved circular contract dependency |
+| Timestamp | Task | Level (Minor / Substantive) | Human Rationale | Deviation Detail |
+|-----------|------|-----------------------------|-----------------|------------------|
+| HH:MM     | [Task Title] | Minor | Improve loop readability | Extracted internal `formatChunk` helper |
+| HH:MM     | [Task Title] | Substantive | Resolve circular module dependency | Modified `src/types.ts` (added to bounds) |
 ```
 
 Record BEFORE moving to the next step. Do not batch deviations.
@@ -91,52 +91,35 @@ STOP and present deviations to the user when EITHER:
 - Minor deviations accumulate to ≥5 total.
 
 ```markdown
-Deviations from plan.md so far:
-| # | Task | Level | Deviation | Rationale |
-|---|------|-------|-----------|-----------|
+### 🚨 Deviations Encountered
+| Task | Level | One-Line Human Reason | Technical Detail |
+|------|-------|-----------------------|------------------|
 [table]
 
 Options:
 1. Accept all — continue
 2. Reject specific deviations — revert and redo
 3. Re-plan — return to plan stage
-
-Which?
 ```
 
 Do NOT continue until the user responds (unless operating in an authorized autonomous pipeline without unhandled blockers).
 
 # Gap Recording
 
-If an out-of-scope requirement or long-term improvement is uncovered,
-record it without expanding current scope:
-
+If an out-of-scope requirement or long-term improvement is uncovered, record it:
 ```markdown
-## Gaps
+## Gaps & Future Work
 - [ ] <description> — <why out of scope> — <suggested approach>
 ```
-
-# Completed Tasks Validation
-
-Before moving from one task to the next, verify:
-- The task's status is recorded in `gate.md`.
-- `per-task` mode: `git log` confirms the recorded commit exists.
-- All step verifications produced actual positive evidence.
 
 # Stage 2: Finalize Build
 
 Based on `config.yaml` `commit.when`:
+- **`per-task`:** Tasks already have individual hashes.
+- **`per-plan`:** Commit all changes at once with a descriptive message (e.g. `feat(<scope>): <summary of capability>`). Update all rows in `gate.md` with this hash.
+- **`manual`:** Leave all entries as `—`.
 
-- **`per-task`:** All `gate.md` entries already have individual hashes.
-- **`per-plan`:** Commit all changes at once:
-  ```bash
-  git add <all changed files>
-  git commit -m "feat: <summary of all tasks>"
-  ```
-  Update ALL `gate.md` Task Execution entries with the single commit hash.
-- **`manual`:** Leave all entries as `—`. User commits separately.
-
-Update `gate.md` with final table state and present a concise summary:
+Update `gate.md` and present a concise completion summary:
 - Completed task list with commit hashes.
 - Deviations logged (if any).
 - Recorded gaps (if any).

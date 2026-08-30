@@ -3,13 +3,9 @@ name: beyond-code-think
 description: >
   Use when clarifying requirements before coding, the user's intent
   is unclear, needs to narrow down what to build, or entering the think phase
-  of beyond-code. Covers Scope Check, core data contracts,
-  Explicit Non-Goals, Given/When/Then spec format, and gate.md management.
+  of beyond-code. Covers Scope Check, first-principles data contracts,
+  Explicit Non-Goals, self-descriptive scenario specs, and gate.md management.
 ---
-
-# Terminology Reference
-
-This skill uses RFC 2119 keywords and structural definitions defined in `beyond-code/SKILL.md`.
 
 # Scope Constraint
 
@@ -20,8 +16,8 @@ You MUST NOT write or modify ANY code. Your ONLY outputs in this stage are
 
 Clarify user intent from **first principles**, establish clear data contracts,
 and carve out the **negative space (Explicit Non-Goals)** to prevent agent drift.
-Capture the result in `spec.md` with verifiable acceptance criteria. Do NOT plan
-detailed file-by-file implementation tasks — that belongs to the plan stage.
+Capture the result in `spec.md` using self-descriptive requirements and verifiable acceptance criteria.
+Do NOT plan detailed file-by-file implementation tasks — that belongs to the plan stage.
 
 # Stage 0: Gate Check
 
@@ -39,10 +35,10 @@ Before asking clarifying questions, assess: does this feature contain
 If YES — ask the user to confirm the subsystem split before writing
 any spec. Present a Module Breakdown:
 
-```
-| Module | Description | Initiative Slug | depends_on |
-|--------|-------------|-----------------|------------|
-| ...    | ...         | ...             | none       |
+```markdown
+| Subsystem Module | Description | Initiative Slug | depends_on |
+|------------------|-------------|-----------------|------------|
+| ...              | ...         | ...             | none       |
 ```
 
 Each module becomes a separate initiative. Start with the first one;
@@ -56,16 +52,17 @@ Clarifying questions MUST be high-leverage and focused on architecture/user inte
 
 **Questioning prohibitions**:
 - **MUST NOT ask micro-implementation details**: Never ask about function names, variable naming, file organization, or internal library choices that the agent can decide in Plan.
-- **MUST NOT ask 0.01% extreme-edge cases**: Never derail discussion with ultra-rare failure permutations (e.g. power outage during atomic write). Address realistic edge cases via explicit **Assumptions**.
+- **MUST NOT ask 0.01% extreme-edge cases**: Never derail discussion with ultra-rare failure permutations. Address realistic edge cases via explicit **Assumptions**.
 
 **When you do need to ask**:
 - Ask at most ONE high-impact question at a time.
 - State your understanding, present 2 concrete choices, and provide a recommended default.
 - If user input is largely sufficient, formulate reasonable defaults as **Assumptions** in `spec.md` rather than stalling progress with unnecessary questions.
 
-# Stage 3: Write spec.md
+# Stage 3: Write spec.md (No Internal Code Names)
 
-Generate `.beyond-code/<slug>/spec.md` using this expressive, high-leverage template:
+Generate `.beyond-code/<slug>/spec.md` using this self-descriptive template.
+**RULE**: Use descriptive scenario titles instead of abstract code names (e.g. use `### Scenario: Refresh Expired Access Token` instead of `R1`).
 
 ```markdown
 ---
@@ -77,26 +74,27 @@ status: draft | confirmed
 
 ## 1. Core Scenarios & Acceptance Criteria
 
-### R1: [Description — MUST use concrete action verbs]
+### Scenario: [Descriptive Title — MUST use concrete action verbs]
 <!-- Banned vague verbs: support, integrate, enhance, optimize, handle, manage, process, facilitate, leverage, utilize -->
 <!-- Preferred concrete verbs: create, return, validate, reject, transform, emit, store, delete -->
 - **Given**: [Preconditions / initial state]
 - **When**: [Action or trigger event]
 - **Then**: [Observable, verifiable result]
 
-### R2: ...
+### Scenario: [Next Descriptive Title]
+...
 
 ## 2. Core Data Contracts & Invariants (First Principles)
-<!-- Define key entities, schemas, and immutable system invariants -->
+<!-- Define key entities, schemas, and immutable system invariants as defensive rules -->
 - **Data Flow**: <Source / producer> → <Unified schema / DTO> → <Consumer>
 - **Invariants**:
   - [Invariant 1: e.g. "Timestamps MUST be UTC ISO-8601 strings"]
-  - [Invariant 2: e.g. "All errors MUST return structured { code, message } object"]
+  - [Invariant 2: e.g. "Error responses MUST return structured { code, message } format"]
 
 ## 3. Explicit Non-Goals (Negative Space)
-<!-- What this initiative deliberately will NOT do, to prevent agent hallucination & scope creep -->
+<!-- Deliberately excluded scope to prevent agent hallucination & scope creep -->
 - ⛔ Will NOT: <e.g. Support multi-tenant isolation in this version>
-- ⛔ Will NOT: <e.g. Alter existing database migrations>
+- ⛔ Will NOT: <e.g. Modify existing database migrations>
 
 ## 4. Assumptions
 <!-- Reasonable defaults inferred by the agent; user can adjust before confirmation -->
@@ -111,8 +109,8 @@ If the Scope Check identified sub-systems, append:
 ```markdown
 ## Module Breakdown
 
-| Module | Initiative Slug | depends_on |
-|--------|-----------------|------------|
+| Subsystem Module | Initiative Slug | depends_on |
+|------------------|-----------------|------------|
 ```
 
 # Stage 4: Update gate.md
@@ -125,10 +123,10 @@ Append to Gate 1:
 - [ ] User confirmed
 ```
 
-# Stage 5: Present and get confirmation
+# Stage 5: Present and Get Confirmation
 
-Present a clean, high-signal summary of what was captured:
-1. **Core Capabilities (R1, R2...)**
+Present a clean, human-first summary of what was captured:
+1. **Core Capabilities & Scenarios**
 2. **Explicit Non-Goals (What we are NOT doing)**
 3. **Key Assumptions & Invariants**
 

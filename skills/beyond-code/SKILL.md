@@ -9,53 +9,59 @@ description: >
   explicitly says "skip beyond-code".
 ---
 
-# Terminology Reference
+# Terminology & Global Standards (One Home Per Fact)
 
-This skill suite uses RFC 2119 keywords and structural definitions:
+This root skill defines the single authoritative vocabulary and rules for the entire suite:
 
-| Keyword / Term | Meaning |
-|----------------|---------|
+| Term / Keyword | Definition & Authority |
+|----------------|------------------------|
 | MUST / REQUIRED | Absolute obligation. Violation = process failure. |
 | MUST NOT | Absolute prohibition. Violation = process failure. |
 | NEVER | Zero-exception prohibition. |
-| HARD-GATE | Must pass before next stage. Blocked = STOP. |
+| HARD-GATE | Prerequisite checkpoint. Blocked = STOP. |
 | STOP | Cease current action. Await user instruction. |
-| ONLY | Exclusive action — no other path permitted. |
-| SHOULD / SHOULD NOT | Strong guidance — deviate only with stated reason. |
+| ONLY | Exclusive action — no alternative permitted. |
+| SHOULD / SHOULD NOT | Strong guidance — deviate only with documented rationale. |
 | MAY / OPTIONAL | Agent discretion. |
 | EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
-| Initiative | The entire end-to-end unit of work (`.beyond-code/<slug>/`). |
-| Spec | Requirements, data contracts, and Non-Goals (`spec.md`). |
-| Implementation Plan (Plan) | Architecture, data flow, bounds, and tasks (`plan.md`). |
-| Task | An atomic execution unit with `Depends On` metadata in plan.md. |
-| Step | An individual concrete action or verification command within a task. |
-| Minor Deviation | Implementation detail not in plan.md that does not alter public interfaces, file inventory, data contracts, or dependencies (e.g. private helper, local type). Log in gate.md; non-blocking. |
-| Substantive Deviation | Action that alters public APIs, touches files outside File Inventory, adds unapproved dependencies, changes data contracts, or violates spec Non-Goals/Invariants. Log in gate.md AND triggers immediate STOP. |
+| Initiative | End-to-end unit of work (`.beyond-code/<slug>/`). |
+| Spec | Business requirements, data contracts, and Non-Goals (`spec.md`). |
+| Implementation Plan (Plan) | Architecture trade-offs, bounds, and tasks (`plan.md`). |
+| Task | Atomic execution unit with explicit dependencies (`plan.md`). |
+| Step | Concrete action or verification command within a task. |
+| Minor Deviation | Implementation detail not in plan that preserves interfaces, bounds, and contracts (e.g. private helper, local type). Logged; non-blocking. |
+| Substantive Deviation | Action altering public APIs, bounds, packages, data contracts, or Non-Goals. Logged AND triggers immediate STOP. |
 
 # HARD-GATE: No Code Before Spec
 
 You MUST NOT write or modify ANY code, create ANY file, or take ANY
-implementation action until spec.md is in `confirmed` status AND
-gate.md Gate 1 is cleared.
+implementation action until `spec.md` is in `confirmed` status AND
+`gate.md` Gate 1 is cleared.
 
 The ONLY exception: a single-function, single-file bug fix where the
 user explicitly says "skip beyond-code".
 
+# Core Engineering Principles
+
+1. **First-Principles & Trade-off Rigor**: Ground all designs in fundamental business requirements. Evaluate explicit Pros & Cons and document what was given up.
+2. **Self-Descriptive Clarity (No Internal Code Names)**: Use descriptive titles for requirements and tasks. NEVER use abstract internal codes (`R1`, `T1`, `Gate 1`) in communication or Git history.
+3. **Clean Git Hygiene**: Git commit messages MUST describe real engineering changes using standard conventions. They MUST NOT contain any internal process markers (e.g. no `T1`, `R2`, `beyond-code`, or `gate` in commit titles/bodies).
+4. **Human-First Rationale**: When presenting choices, deviations, or trade-offs, state the one-line plain-language human impact first before technical mechanics.
+
 # Role & Human-Agent Dynamics
 
 - When intent is ambiguous, ask ONE concrete clarifying question with a recommended default.
-- When the user's response to a gate check is clearly affirmative ("go", "ok", "sure", "looks good", "start", "build it"), treat it as confirmation and proceed immediately. Do not ask redundant confirmation questions.
+- When the user gives a clear affirmative ("go", "ok", "sure", "looks good", "start", "build it"), treat it as confirmation and proceed immediately without redundant re-asking.
 - When the user asks to skip something non-essential, skip it cleanly.
-- When the user asks for more detail, provide it without unnecessary summarization.
-- Default to confirming before irreversible actions (out-of-bounds file creation, commits, stage transitions).
+- Default to confirming before irreversible actions (out-of-bounds file changes, commits, stage transitions).
 
 # "just do it" / Autonomous Pipeline Semantics
 
-When the user instructs "just do it", "proceed directly", or gives full autonomy upfront:
-- **Full Discipline**: The agent MUST NOT skip any stage or self-review (spec.md, plan.md, Bounds checks, and adversarial verification are still completely executed).
-- **Silent Flow**: Set spec.md and plan.md status to `confirmed`, clear respective gates automatically in gate.md with timestamps, and advance through stages without pausing for intermediate sign-offs.
-- **Alert on Exception**: The agent MUST STOP only if a **Substantive Deviation** occurs or a hard blocker is hit during Build/Verify.
-- **Final Report**: Conclude by presenting the Exception-First Verification Report for final user acceptance.
+When the user instructs "just do it", "proceed directly", or gives upfront autonomy:
+- **Full Discipline**: Execute all stages (Spec, Plan, Bounds cross-validation, and adversarial verification) completely.
+- **Silent Flow**: Set `spec.md` and `plan.md` to `confirmed`, clear respective gates in `gate.md` with timestamps, and advance without pausing for intermediate approvals.
+- **Alert on Exception**: STOP immediately only if a Substantive Deviation occurs or a hard blocker is encountered.
+- **Final Delivery**: Present the Exception-First Verification Report for final user sign-off.
 
 # Initiative Directory Layout
 
@@ -63,13 +69,12 @@ Each initiative lives under `.beyond-code/<slug>/`:
 
 ```
 .beyond-code/<slug>/
-  spec.md    What to build + data contracts + Non-Goals + acceptance criteria
-  plan.md    How to build it + exhaustive implementation bounds + tasks
-  gate.md    Progress ledger — single source of truth
+  spec.md    Requirements + data contracts + Non-Goals + acceptance criteria
+  plan.md    Architecture trade-offs + exhaustive bounds + descriptive tasks
+  gate.md    Progress ledger & visual status — single source of truth
 ```
 
-gate.md is the single canonical source for initiative state.
-All files MUST follow this schema — do not redefine fields in sub-skills.
+`gate.md` schema MUST follow this structure:
 
 ```markdown
 ---
@@ -77,37 +82,36 @@ slug: <initiative-slug>
 created: <YYYY-MM-DD>
 ---
 
+# Initiative Status: <slug>
+
 ## Gate 1: Spec Confirmed
-- [ ] spec.md created: `<path>`
+- [ ] spec.md created: `.beyond-code/<slug>/spec.md`
 - [ ] User confirmed: `<timestamp>`
 - [ ] Gate cleared
 
 ## Gate 2: Plan Ready
-- [ ] plan.md created: `<path>`
+- [ ] plan.md created: `.beyond-code/<slug>/plan.md`
 - [ ] Pre-presentation validation passed
 - [ ] User confirmed: `<timestamp>`
 - [ ] Gate cleared
 
-## Gate 3: Task Execution
+## Gate 3: Task Execution & Progress
 
-Commit behavior depends on `.beyond-code/config.yaml`:
-- `per-task`: each task gets its own commit — hash per row
-- `per-plan`: one commit after all tasks — same hash across all rows
-- `manual`: agent does NOT commit — rows show `—`
-
-| Task | Commit | Status |
-|------|--------|--------|
+| Task Title | Depends On | Commit | Status |
+|------------|------------|--------|--------|
+| <Task Name> | [] | <hash / —> | [ ⏳ Pending \| 🔄 In-Progress \| ✅ Done ] |
 
 ## Deviations
-> Agent MUST log any implementation decision NOT in plan.md.
-| Timestamp | Task | Level (Minor / Substantive) | Deviation | Rationale |
+| Timestamp | Task | Level (Minor / Substantive) | Human Rationale | Deviation Detail |
+|-----------|------|-----------------------------|-----------------|------------------|
 
 ## Gate 4: Verification
-- [ ] Automated checks passed (with auditor evidence)
+- [ ] Automated baseline checks passed (with raw evidence)
+- [ ] Independent Auditor Subagent: [Executed | Skipped by User]
 - [ ] Substantive deviations: [None | User Approved]
-- [ ] R<N>: user confirmed
+- [ ] Requirements verified: user confirmed
 
-## Gaps
+## Gaps & Future Work
 - [ ] <description> — <why out of scope> — <suggested approach>
 
 ## Archive
@@ -116,136 +120,24 @@ Commit behavior depends on `.beyond-code/config.yaml`:
 
 # Stage Transitions
 
-When a sub-skill completes, return to this file. Read gate.md to
-determine the current gate, then follow the corresponding section
-below. You are responsible for stage transitions — sub-skills ONLY
-handle their own stage's work.
+When a sub-skill completes, return to this file. Read `gate.md` to determine the current gate:
+1. **Unclear request / New initiative** → Initialize `gate.md`, load `beyond-code-think`.
+2. **After spec confirmed (Gate 1 cleared)** → Load `beyond-code-plan`.
+3. **After plan ready (Gate 2 cleared)** → Load `beyond-code-build`.
+4. **After all tasks complete (Gate 3 filled)** → Load `beyond-code-verify`.
 
-# When the request is unclear
+# Multi-Initiative & Interruption Handling
 
-Create `.beyond-code/<slug>/gate.md`:
-```markdown
----
-slug: <slug>
-created: <today>
----
+- Each distinct goal gets its own directory under `.beyond-code/<slug>/`.
+- If an initiative depends on another, declare `depends_on: [<slug>]` in `plan.md` frontmatter.
+- When resuming after interruption, read `gate.md` as the single source of truth.
 
-## Gate 1: Spec Confirmed
-- [ ] spec.md created
-- [ ] User confirmed
-```
+# Commit Configuration
 
-Load the `beyond-code-think` skill.
-
-# After spec confirmed (Gate 1 cleared)
-
-gate.md Gate 1 MUST show spec confirmed.
-Load the `beyond-code-plan` skill.
-
-# After plan ready (Gate 2 cleared)
-
-gate.md Gate 2 MUST show plan ready.
-Load the `beyond-code-build` skill.
-
-# After all tasks complete (Gate 3 filled)
-
-gate.md Gate 3 MUST show all tasks complete with commit hashes.
-Load the `beyond-code-verify` skill.
-
-# Gate Enforcement
-
-NEVER self-approve a gate. Each HARD-GATE clears ONLY when:
-- User gives explicit confirmation ("go", "start", "build it", "ok", "sure") OR
-- User gave "just do it" autonomous pipeline instruction
-- The cleared status is recorded in gate.md with a timestamp
-
-If the response is genuinely ambiguous ("maybe", "hmm", "I think so?"), clarify before proceeding.
-
-# Managing multiple pieces of work
-
-Each distinct goal gets its own directory under `.beyond-code/`.
-
-If one depends on another, declare it in plan.md frontmatter with
-`depends_on`. When listing active initiatives, show each slug with its
-gate status and whether it is blocked by an unfinished dependency.
-Completed work lives under `.beyond-code/.archive/`.
-
-When an initiative is archived, check plan.md frontmatter of other
-initiatives for `depends_on` references to the archived slug.
-If found, inform the user that the blocked initiative may now be
-unblocked.
-
-If the user does not specify an initiative, list the active ones
-with gate status and dependency status. If the conversation already
-references one, ask whether to continue that one. Otherwise let the
-user pick.
-
-If a slug already exists, do not overwrite. Try a variant or ask
-the user for a new name.
-
-# Resuming after interruption
-
-When re-entering a session, check `.beyond-code/` for existing
-initiatives (excluding `.archive/`). If more than one is active,
-list them and let the user choose. Do not assume.
-
-If you find one, read its `gate.md`. It tells you which gates are
-cleared, which tasks are done (with commit hashes), and whether the
-agent is waiting on user confirmation. Use gate.md as the single
-source of truth — you SHOULD NOT need to read other files to know
-what to do.
-
-If gate.md is missing or unreadable, reconstruct state from
-available files: if spec.md exists but plan.md does not, think is
-done and plan has not started. If plan.md exists but gate.md has no
-Task Execution entries, planning is done and build has not started.
-If tasks are recorded with commits, resume from the first task not
-recorded. If you cannot determine the stage, tell the user what you
-see and ask.
-
-Then ask whether to continue from there or start fresh. If they
-want a fresh start, do not delete the old initiative — move it to
-`.archive/` or ask the user what to do with it.
-
-# Aborting an initiative
-
-When the user wants to stop, record in gate.md under a new section:
-```markdown
-## Status: ABORTED
-<timestamp> — <reason>
-```
-Ask whether to archive or leave the initiative in place.
-
-# Understanding the project
-
-Load the `beyond-code-project-docs` skill to generate or update
-project documentation. ONLY trigger on explicit request — "study
-this project" or similar.
-
-When reading previously generated docs under `.beyond-code/.project/`,
-compare the recorded commit or date against the current state.
-If they differ, warn the user the docs may be stale.
-
-# Commit preferences
-
-When starting an initiative, check `.beyond-code/config.yaml`.
-If absent, ask the user how they want commits handled and write
-the file. Do not re-read or re-create this file — sub-skills only
-read it.
+`.beyond-code/config.yaml` controls commit preferences (created on first run if missing):
 
 ```yaml
-# .beyond-code/config.yaml
 commit:
   when: per-task | per-plan | manual    # default per-task
   format: project | conventional | user # default project
 ```
-
-`when` controls commit timing:
-- `per-task` — commit after each completed task. gate.md records a unique short hash per task.
-- `per-plan` — commit once after all tasks are done. gate.md records the same hash across all tasks.
-- `manual` — NEVER commit on your own; let the user decide. gate.md records `—` for each task.
-
-`format` controls commit message style:
-- `project` — follow the repo's existing commit conventions
-- `conventional` — use Conventional Commits format
-- `user` — ask the user for their preferred format and write it here

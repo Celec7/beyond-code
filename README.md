@@ -1,32 +1,28 @@
 # Beyond Code
 
-A lightweight, natural-language-driven interaction skill for coding agents.
+A lightweight, natural-language-driven interaction standard and skill suite for coding agents.
 
-Make the agent understand your intent. Force the plan through your review. Constrain every action to your consent. Demand evidence before acceptance.
+Make the agent understand your intent. Ground architecture in first-principles trade-offs. Constrain every action to declared bounds. Demand fresh evidence over claims.
 
 English | [中文](README_zh-CN.md)
 
 ## Why This Exists
 
-In my vibe coding practice, I tried several AI-process-driven skills: [Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec), [obra/superpowers](https://github.com/obra/superpowers), [open-gsd/gsd-core](https://github.com/open-gsd/gsd-core). They are powerful, but I ran into problems.
+In my vibe coding practice, I tried several AI-process-driven skills ([OpenSpec](https://github.com/Fission-AI/OpenSpec), [superpowers](https://github.com/obra/superpowers), [gsd-core](https://github.com/open-gsd/gsd-core)).
 
-Some are clean and lightweight, yet after generating a plan they jump straight to ask for my permission without explaining the plan. Some are thorough and disciplined, but every step requires CLI interactions or bash commands to gather state, burning context on infrastructure instead of thinking.
+While powerful, real-world development highlighted recurring problems: some lacked deep architectural trade-off evaluations and polluted Git history with internal jargon (`R1`, `T1`); some trusted the agent too much and let silent degradation or half-baked TODOs slip through; others required heavy CLI interactions that consumed precious token context on infrastructure.
 
-These skills share a deeper issue: they trust the agent too much and rely on their own internal terminology to constrain it. So I stopped using them and found that with the same token budget, a flexible process of my own could work better. I designed this skill to help developers and agents collaborate more effectively and produce code that actually matches expectations.
+I designed Beyond Code to bridge these gaps: **no bespoke CLI tools, no token-wasting bureaucracy. Instead, it enforces first-principles engineering, clean self-descriptive naming, and adversarial verification so developers and agents collaborate with clarity and deliver production-grade code.**
 
 ## Philosophy
 
-**User intent before code.** The agent MUST NOT write code until the spec is confirmed. Every requirement must be traceable to a concrete acceptance criterion.
-
-**Plan exhaustively, execute within bounds.** The plan must list every file, function, and dependency the build agent may touch. Anything not in that list is a deviation — and deviations trigger review.
-
-**First-principles root cause diagnosis.** When errors or test failures arise, NEVER slap blind symptom patches or speculative edge-case guards. Trace callers upstream in read-only mode and fix the contract at the source.
-
-**Independent audit & exception-first reporting.** Verify uses an independent red-team perspective to audit diffs against specs. It collapses benign internal glue and prioritizes substantive deviations and silent degradation.
-
-**Evidence, not claims.** EVIDENCE BEFORE CLAIMS. No "should be fine." No extrapolation from old output. Run the command fresh, show the output, then make your claim.
-
-**The process uses hard language, not soft suggestions.** The skill suite uses RFC 2119 keywords (MUST, MUST NOT, NEVER, HARD-GATE, STOP) throughout. An agent that skips a gate violates the skill.
+1. **User intent before code (No Code Before Spec)**: The agent MUST NOT write code until requirements and data contracts are confirmed.
+2. **First-Principles & Trade-off Rigor**: Ground architecture in fundamental business needs. Evaluate explicit Pros & Cons and document what was given up.
+3. **Self-Descriptive Clarity (No Internal Code Names)**: Abolish abstract code names (`R1`, `T1`, `Gate 1`). Use self-descriptive scenario and task titles. **NEVER leak internal process markers into Git commit history.**
+4. **One Home Per Fact**: Absorb engineering documentation best practices. Define global rules once at the root; eliminate duplicated boilerplate and reasoning transcripts.
+5. **Plan exhaustively, execute within bounds**: Declare all files, APIs, and dependencies. Substantive deviations trigger an immediate STOP for user review.
+6. **Independent Adversarial Verification**: Verify results with an optional isolated Auditor Subagent (free from builder confirmation bias) to filter benign glue code and highlight substantive deviations.
+7. **Evidence, not claims (EVIDENCE BEFORE CLAIMS)**: Demand fresh command outputs and raw evidence before declaring success.
 
 ## Install
 
@@ -34,52 +30,35 @@ These skills share a deeper issue: they trust the agent too much and rely on the
 npx skills add Cccc-owo/beyond-code
 ```
 
-Triggered by natural language or manual invocation. Say "let's plan first", or the agent should activate automatically when the task involves architectural decisions or spans multiple files. The ONLY skip condition: a trivial bug fix in a small-scale project (e.g. a script under ~100 lines) where the user explicitly says "skip beyond-code".
+Triggered via natural language (e.g. "let's plan first", "follow beyond-code"). When instructed to "just do it", the agent activates the **Autonomous Pipeline**: full discipline, zero conversational interruptions, alerting only on substantive exceptions.
 
 ## Flow
 
 ```
-Think ──[HARD-GATE]──→ Plan ──[HARD-GATE]──→ Build ──[HARD-GATE]──→ Verify (Auditor)
-  │                      │                       │                        │
-  └── spec.md            └── plan.md             └── commits +           └── independent audit +
-       (scenarios +            (architecture +         read-only trace +       exception-first
-        contracts +             data flow +             deviations              report +
-        Non-Goals)              bounds + tasks)         logged in gate)         archive)
+Think ──[HARD-GATE 1]──→ Plan ──[HARD-GATE 2]──→ Build ──[HARD-GATE 3]──→ Verify (Auditor)
+  │                        │                        │                         │
+  └── spec.md              └── plan.md              └── tasks (DAG) +         └── independent audit +
+       (scenarios +             (Pros/Cons +             read-only trace +         blast radius +
+        contracts +              bounds + DAG tasks)     clean Git commits         exception-first
+        Non-Goals)                                                                 report + archive)
 ```
 
-**Think** — Anti-noise questioning gate (no micro-implementation questions, no 0.01% extreme cases). Scope Check splits multi-subsystem initiatives. Produces `spec.md` with Given/When/Then scenarios, Core Data Contracts & Invariants, Explicit Non-Goals (negative space), and reasonable Assumptions.
-
-**Plan** — Architecture & unified data flow overview + atomic bite-sized tasks with exact signatures and behavior descriptions. Exhaustive Implementation Bounds. Runs Pre-Presentation Validation (Spec Coverage, Placeholder Scan, Bounds Cross-Validation, and Non-Goals compliance).
-
-**Build** — Stage 0 validates Implementation Bounds. Enforces the **First-Principles Root-Cause Protocol** (no ad-hoc symptom patching, upstream source fix). Classifies deviations (Minor vs Substantive); substantive deviations trigger immediate STOP, while minor deviations trigger review at ≥5.
-
-**Verify** — Spawns an independent Auditor Subagent (isolated from builder bias) for 3D adversarial auditing. Filters benign seams and generates an **Exception-First Verification Report** highlighting substantive deviations, silent degradation, and fresh command evidence before user acceptance and archiving.
+- **Think**: Anti-noise questioning. Produces `spec.md` with self-descriptive scenarios, Core Data Contracts & Invariants, Explicit Non-Goals, and reasonable Assumptions.
+- **Plan**: Architecture trade-offs (Pros & Cons) + unified data flows + atomic tasks with dependency DAGs (`Depends On`) and context code anchors. Exhaustive Implementation Bounds.
+- **Build**: Executes strictly in topological DAG order. Enforces the **First-Principles Root-Cause Protocol** (trace upstream callers; no blind symptom patching). Keeps Git history clean of internal markers.
+- **Verify**: User-guided independent Auditor Subagent choice. Analyzes Blast Radius, prioritizes substantive deviations and silent degradation in an Exception-First report, and generates a lean `summary.md` on archive.
 
 ## Directory Structure
 
 ```
 .beyond-code/
-├── config.yaml               # commit preferences
+├── config.yaml               # commit preferences (per-task / per-plan / manual)
 ├── <slug>/
-│   ├── spec.md               # what to build + acceptance criteria
-│   ├── plan.md               # how to build + exhaustive bounds + tasks
-│   └── gate.md               # progress ledger — single source of truth
-├── .archive/                 # completed initiatives
-└── .project/                 # project context docs (manual trigger)
+│   ├── spec.md               # requirements + data contracts + Non-Goals
+│   ├── plan.md               # architecture Pros/Cons + bounds + DAG tasks
+│   └── gate.md               # progress ledger & visual DAG status
+└── .archive/                 # completed and summarized initiatives
 ```
-
-## Skill Architecture
-
-```
-beyond-code (Router)
-  ├── think      → produce spec.md
-  ├── plan       → produce plan.md
-  ├── build      → execute tasks, log deviations
-  ├── verify     → checks + acceptance + archive
-  └── project-docs → deep scan (explicit trigger only)
-```
-
-Every sub-skill embeds a Terminology Reference block and re-declares the code-before-spec prohibition. Each checks gate.md before proceeding.
 
 ## License
 
