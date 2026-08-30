@@ -29,7 +29,7 @@
 ## 使用
 
 ```bash
-npx skills add Cccc-owo/beyond-code
+npx skills add Celec7/beyond-code
 ```
 
 通过自然语言触发（如“先计划一下”、“按 beyond-code 流程做”）。若用户要求“直接做（just do it）”，Agent 将开启**自驱流水线模式**：步骤完整不打折、静默自动流转、遇实质偏差立即报警。

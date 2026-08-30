@@ -29,7 +29,7 @@ I designed Beyond Code to bridge these gaps: **no bespoke CLI tools, no token-wa
 ## Install
 
 ```bash
-npx skills add Cccc-owo/beyond-code
+npx skills add Celec7/beyond-code
 ```
 
 Triggered via natural language (e.g. "let's plan first", "follow beyond-code"). When instructed to "just do it", the agent activates the **Autonomous Pipeline**: full discipline, zero conversational interruptions, alerting only on substantive exceptions.
