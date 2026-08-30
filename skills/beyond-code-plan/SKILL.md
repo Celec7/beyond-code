@@ -5,12 +5,14 @@ description: >
   after requirements are clear or spec.md is confirmed. Covers architecture
   trade-offs (Pros & Cons), unified data flows, self-descriptive tasks with
   dependency topology, context anchors, and implementation bounds.
+  Supports both single initiatives and nested sub-initiatives inside an Epic.
 ---
 
 # Scope Constraint
 
 You MUST NOT write or modify implementation code. Your ONLY output in this stage is
-`.beyond-code/<slug>/plan.md`. Implementation happens in the build stage AFTER this plan is confirmed.
+`plan.md` (located at `.beyond-code/<slug>/plan.md` or `.beyond-code/<epic-slug>/<sub-slug>/plan.md`).
+Implementation happens in the build stage AFTER this plan is confirmed.
 
 # Purpose
 
@@ -20,7 +22,8 @@ The build agent MUST be able to execute the tasks strictly along the declared de
 
 # Stage 0: Prerequisite Check
 
-Check `.beyond-code/<slug>/spec.md` (if a formal spec was created):
+Check relevant `spec.md`:
+- If in a nested sub-initiative, check parent `.beyond-code/<epic-slug>/spec.md` for global invariants/contracts and any local module specs.
 - Confirm requirements and Non-Goals are understood.
 - The plan MUST address the core scenarios, respect all invariants, and avoid all Explicit Non-Goals.
 

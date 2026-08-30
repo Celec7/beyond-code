@@ -5,6 +5,7 @@ description: >
   offering adversarial independent audits, or entering the verify phase
   of beyond-code. Covers exception-first verification, blast radius analysis,
   three-way acceptance triage, in-flight remediation, and atomic archiving.
+  Supports both single initiatives and nested sub-initiatives inside an Epic.
 ---
 
 # Scope & Context
@@ -21,7 +22,7 @@ or course corrections seamlessly.
 
 # Stage 0: Prerequisite Check
 
-Read `.beyond-code/<slug>/plan.md`. Confirm all tasks are marked completed (`- [x]`).
+Read the active `plan.md`. Confirm all tasks are marked completed (`- [x]`).
 
 # Stage 1: Verification & Independent Auditor Selection
 
@@ -38,9 +39,9 @@ Present the baseline test status and ask the user:
 **Branching Logic**:
 - **If User confirms (e.g. "yes", "好", "用", "audit", "check")**:
   - Call the `subagent` tool. Inputs MUST strictly contain:
-    1. `.beyond-code/<slug>/spec.md` (if present)
-    2. `.beyond-code/<slug>/plan.md`
-    3. `git diff` against the base commit.
+    1. Parent and local `spec.md` (if present)
+    2. Active `plan.md`
+    3. `git diff` against the starting base commit.
   - Instruct the child agent to execute the 3-dimensional scan (Sections 3.1 - 3.3 below) and format its response as the Exception-First Verification Report.
   - Adopt the subagent's audit findings directly.
 
@@ -74,7 +75,7 @@ Distinguish between benign code realities and unauthorized agent discretion:
 Present the verification report in this high-signal structure:
 
 ```markdown
-# 🏁 Verification Report: <slug>
+# 🏁 Verification Report: <slug | sub-slug>
 
 ### 🎯 Blast Radius & Affected Surface
 - **Core Logic**: `<list of primary modified files>`
@@ -104,24 +105,35 @@ Present the verification report in this high-signal structure:
 
 ---
 ### 🚦 Next Steps (Please choose):
-1. **Accept & Archive**: Everything matches expectations → Proceed to archive.
+1. **Accept & Proceed**: Everything matches expectations → Proceed.
 2. **In-Flight Fix**: Behavior or UX doesn't match intent → Describe the gap, agent fixes in-place.
-3. **Course Correction / Re-scope**: Fundamental mismatch → Archive as superseded, start fresh.
+3. **Course Correction / Re-scope**: Fundamental mismatch → Re-scope approach.
 ```
 
-# Stage 3: Three-Way Acceptance Triage Protocol
+# Stage 3: Three-Way Acceptance Triage & Archiving Protocol
 
 Evaluate the user's response:
 
 ### 🟢 Branch 1: User Accepts (e.g. "looks good", "通过", "ok", "archive")
+
+#### For a Sub-Initiative inside an Epic (`.beyond-code/<epic-slug>/<sub-slug>/`):
+1. Mark the sub-initiative complete in parent `.beyond-code/<epic-slug>/roadmap.md`:
+   ```markdown
+   - [x] `<sub-slug>`: [Completed]
+   ```
+2. Check `roadmap.md` for remaining sub-initiatives:
+   - If more sub-initiatives remain: "Sub-initiative `<sub-slug>` verified! Ready to proceed to next: `<next-sub-slug>`." Load `beyond-code-plan` for `<next-sub-slug>`.
+   - If all sub-initiatives are complete: Proceed to **Epic Final Sign-Off & Archive** below.
+
+#### For a Standalone Initiative or Epic Final Sign-Off:
 The agent **MUST immediately in the SAME turn** execute the atomic archiving workflow:
-1. Generate `.beyond-code/<slug>/summary.md` (delivered features, key trade-offs, remaining gaps).
-2. Move directory: `mv .beyond-code/<slug> .beyond-code/.archive/<slug>`.
-3. Confirm completion: "Initiative successfully archived to `.beyond-code/.archive/<slug>/`. Ready for the next initiative!"
+1. Generate `.beyond-code/<slug>/summary.md` (or `.beyond-code/<epic-slug>/summary.md`) covering delivered capabilities, key trade-offs, and remaining gaps.
+2. Move directory: `mv .beyond-code/<slug> .beyond-code/.archive/<slug>` (or for Epic: `mv .beyond-code/<epic-slug> .beyond-code/.archive/<epic-slug>`).
+3. Confirm completion: "Successfully archived to `.beyond-code/.archive/<slug>/`. Ready for the next initiative!"
 **NEVER defer or skip the `mv` command once acceptance is received.**
 
 ### 🟡 Branch 2: In-Flight Remediation (e.g. "this error message is wrong", "still missing edge case")
-If the implementation does not meet the user's practical expectations:
+If the implementation does not meet practical expectations:
 1. **Do NOT archive**. Keep the initiative active.
 2. Append a Remediation Task to `plan.md` describing the exact adjustment needed.
 3. Apply the **First-Principles Root-Cause Protocol** to implement the fix.

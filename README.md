@@ -4,7 +4,7 @@
 
 A lightweight, natural-language-driven interaction standard and skill suite for coding agents.
 
-Make the agent understand your intent. Ground architecture in first-principles trade-offs. Constrain every action to declared bounds. Demand fresh evidence over claims.
+Make the agent understand your intent. Ground architecture in first-principles trade-offs. Constrain every action to declared bounds. Demand fresh evidence over claims. Supports both single initiatives and nested modular Epics.
 
 English | [中文](README_zh-CN.md)
 
@@ -22,11 +22,12 @@ I designed Beyond Code to bridge these gaps: **no bespoke CLI tools, no token-wa
 2. **First-Principles & Trade-off Rigor**: Ground architecture in fundamental business needs. Evaluate explicit Pros & Cons and document what was given up.
 3. **Self-Descriptive Clarity (No Internal Code Names)**: Abolish abstract code names (`R1`, `T1`). Use self-descriptive scenario and task titles. **NEVER leak internal process markers into Git commit history.**
 4. **One Home Per Fact**: Eliminate duplicate tracking tables and checklists. `plan.md` is the single source of truth for architecture, tasks, and live progress.
-5. **Plan exhaustively, execute within bounds**: Tasks explicitly declare affected files and interfaces. Substantive deviations trigger an immediate STOP for user review.
-6. **First-Principles Root-Cause Protocol**: When bugs occur during execution, trace upstream callers and contracts instead of slapping downstream band-aids.
-7. **Independent Adversarial Verification**: Verify results with an optional isolated Auditor Subagent (free from builder confirmation bias) to filter benign glue code and highlight substantive deviations.
-8. **Three-Way Acceptance Triage & Atomic Archiving**: User sign-off triggers immediate atomic archiving in the same turn to eliminate zombie folders, with seamless support for in-flight remediation and course correction.
-9. **Evidence, not claims (EVIDENCE BEFORE CLAIMS)**: Demand fresh command outputs and raw evidence before declaring success.
+5. **Modular Decomposition (Nested Epics)**: Support breaking complex features into a clean nested Epic with modular sub-initiatives executed along a DAG roadmap.
+6. **Plan exhaustively, execute within bounds**: Tasks explicitly declare affected files and interfaces. Substantive deviations trigger an immediate STOP for user review.
+7. **First-Principles Root-Cause Protocol**: When bugs occur during execution, trace upstream callers and contracts instead of slapping downstream band-aids.
+8. **Independent Adversarial Verification**: Verify results with an optional isolated Auditor Subagent (free from builder confirmation bias) to filter benign glue code and highlight substantive deviations.
+9. **Three-Way Acceptance Triage & Atomic Archiving**: User sign-off triggers immediate atomic archiving in the same turn to eliminate zombie folders, with seamless support for in-flight remediation and course correction.
+10. **Evidence, not claims (EVIDENCE BEFORE CLAIMS)**: Demand fresh command outputs and raw evidence before declaring success.
 
 ## Install
 
@@ -47,13 +48,14 @@ Think ─────────→ Plan ─────────→ Build �
         Non-Goals)       DAG tasks)                           atomic archive)
 ```
 
-- **Think**: Anti-noise questioning. Produces `spec.md` with self-descriptive scenarios, Core Data Contracts & Invariants, Explicit Non-Goals, and reasonable Assumptions.
+- **Think**: Scope check (Single Initiative vs. Nested Epic). Produces `spec.md` with self-descriptive scenarios, Core Data Contracts & Invariants, Explicit Non-Goals, and reasonable Assumptions.
 - **Plan**: Architecture trade-offs (Pros & Cons) + unified data flows + atomic tasks with dependency DAGs (`Depends On`) and context code anchors. Clear implementation bounds.
 - **Build**: Executes strictly in topological DAG order. Enforces the **First-Principles Root-Cause Protocol** (trace upstream callers; no blind symptom patching). Keeps Git history clean of internal markers.
-- **Verify**: User-guided independent Auditor Subagent choice. Analyzes Blast Radius, prioritizes substantive deviations and silent degradation in an Exception-First report; executes atomic archiving with lean `summary.md` on sign-off, or handles in-flight fixes.
+- **Verify**: User-guided independent Auditor Subagent choice. Analyzes Blast Radius, prioritizes substantive deviations and silent degradation in an Exception-First report; updates Epic roadmap or executes atomic archiving with lean `summary.md` on sign-off.
 
 ## Directory Structure
 
+### 1. Single Initiative
 ```
 .beyond-code/
 ├── config.yaml               # commit preferences (per-task / per-plan / manual)
@@ -61,6 +63,20 @@ Think ─────────→ Plan ─────────→ Build �
 │   ├── spec.md               # requirements + data contracts + Non-Goals
 │   └── plan.md               # architecture Pros/Cons + bounds + DAG tasks & progress
 └── .archive/                 # completed and summarized initiatives
+```
+
+### 2. Nested Epic (Multi-Initiative Modular Structure)
+```
+.beyond-code/
+├── config.yaml
+├── <epic-slug>/
+│   ├── spec.md               # global architecture + data contracts + Non-Goals
+│   ├── roadmap.md            # sub-initiatives DAG roadmap & completion status
+│   ├── <sub-slug-1>/         # sub-initiative 1 (inherits global contracts)
+│   │   └── plan.md           # module trade-offs + bounds + DAG tasks & progress
+│   └── <sub-slug-2>/         # sub-initiative 2
+│       └── plan.md           # module trade-offs + bounds + DAG tasks & progress
+└── .archive/                 # whole Epic archived upon completion
 ```
 
 ## License

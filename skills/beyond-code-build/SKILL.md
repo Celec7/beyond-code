@@ -5,11 +5,12 @@ description: >
   task, tracking progress directly in plan.md, or entering the build
   phase of beyond-code. Covers topological task execution, first-principles
   root-cause diagnosis, clean Git hygiene, and deviation management.
+  Supports both single initiatives and nested sub-initiatives inside an Epic.
 ---
 
 # Scope & Context
 
-Execute tasks strictly from `.beyond-code/<slug>/plan.md` within the declared Implementation Bounds.
+Execute tasks strictly from `plan.md` (`.beyond-code/<slug>/plan.md` or `.beyond-code/<epic-slug>/<sub-slug>/plan.md`) within the declared Implementation Bounds.
 Follow the global rules and definitions in `beyond-code/SKILL.md`.
 
 # Purpose
@@ -20,7 +21,7 @@ Maintain clean Git history free of internal process code names.
 
 # Stage 0: Prerequisite & Bounds Check
 
-Read `.beyond-code/<slug>/plan.md`.
+Read the active `plan.md`.
 
 Before writing code:
 1. Confirm tasks and boundaries are clear.
@@ -36,7 +37,7 @@ When a test fails, a build breaks, or an unexpected error occurs during executio
 
 **Mandatory 3-step investigation before any fix**:
 1. **Trace Upstream (只读溯源)**: Inspect callers and producers along the call chain to discover where invalid data or unexpected state was first introduced.
-2. **Contract Breakdown (契约审视)**: Check the data contracts defined in `spec.md` and `plan.md`. Is the issue caused by inconsistent data shapes assembled on-the-fly?
+2. **Contract Breakdown (契约审视)**: Check the data contracts defined in `spec.md` (and parent Epic `spec.md` if nested) and `plan.md`. Is the issue caused by inconsistent data shapes assembled on-the-fly?
 3. **Fix at the Source (源头治理)**: Always fix the defect at the root producer/contract level, or unify the data flow. If this requires altering the agreed plan, treat it as a Substantive Deviation.
 
 # Stage 1: Execute Each Task in Topological Order

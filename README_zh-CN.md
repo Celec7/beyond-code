@@ -4,7 +4,7 @@
 
 一个轻量、自然语言驱动的 Coding Agent 交互规范与工作流套件。
 
-让 Agent 明确你的需求。从第一性原理权衡方案。严格在边界内执行。要求 Agent 拿出证据而非口头声称。
+让 Agent 明确你的需求。从第一性原理权衡方案。严格在边界内执行。要求 Agent 拿出证据而非口头声称。原生支持单体提案与嵌套模块化 Epic。
 
 [English](README.md) | 中文
 
@@ -22,11 +22,12 @@
 2. **第一性原理与权衡推演（First-Principles Trade-offs）**：从本质业务需求出发设计架构，明确声明选择理由、优缺点（Pros & Cons）以及放弃了什么，杜绝创可贴式打补丁。
 3. **自解释与零黑话（Self-Descriptive, No Code Names）**：全面废除 `R1`/`T1` 等抽象代号，统一使用具象业务场景与任务标题；**严禁将内部过程代号渗入 Git Commit 历史**。
 4. **单点事实归宿（One Home Per Fact）**：拒绝多处重复记账。`plan.md` 作为架构设计、任务拓扑与执行进度的唯一状态源。
-5. **清晰边界，违规即停（Implementation Bounds）**：任务内明确声明涉及的文件与接口；实质性越界（Substantive Deviation）立即触发中断（STOP）交由人类裁决。
-6. **第一性原理只读溯源协议（Root-Cause Protocol）**：遇 Bug 强制只读排查上游生产者与数据契约，严禁在下游盲目打补丁（如滥用 `?.` 或掩盖错误）。
-7. **独立审计与异常优先（Exception-First Adversarial Audit）**：Verify 阶段提供独立红队 Auditor Subagent 选项（无写代码记忆偏见），自动折叠内部良性胶水代码，顶格汇报实质性偏差与偷懒降级。
-8. **三态验收裁决与原子归档（Three-Way Triage & Atomic Archive）**：用户签收即在同一轮对话内原子化完成浓缩归档，杜绝僵尸提案滞留；同时无缝支持就地微调（In-Flight Fix）与推倒重构（Course Correction）。
-9. **证据先于声称（EVIDENCE BEFORE CLAIMS）**：杜绝口头声称，必须运行命令并捕获原始输出作为验收证据。
+5. **模块化分层拆解（Nested Epics）**：支持将复杂大系统拆解为嵌套 Epic 与子提案路线图（Roadmap DAG），分模块逐个击破。
+6. **清晰边界，违规即停（Implementation Bounds）**：任务内明确声明涉及的文件与接口；实质性越界（Substantive Deviation）立即触发中断（STOP）交由人类裁决。
+7. **第一性原理只读溯源协议（Root-Cause Protocol）**：遇 Bug 强制只读排查上游生产者与数据契约，严禁在下游盲目打补丁（如滥用 `?.` 或掩盖错误）。
+8. **独立审计与异常优先（Exception-First Adversarial Audit）**：Verify 阶段提供独立红队 Auditor Subagent 选项（无写代码记忆偏见），自动折叠内部良性胶水代码，顶格汇报实质性偏差与偷懒降级。
+9. **三态验收裁决与原子归档（Three-Way Triage & Atomic Archive）**：用户签收即在同一轮对话内原子化完成浓缩归档，杜绝僵尸提案滞留；同时无缝支持就地微调（In-Flight Fix）与推倒重构（Course Correction）。
+10. **证据先于声称（EVIDENCE BEFORE CLAIMS）**：杜绝口头声称，必须运行命令并捕获原始输出作为验收证据。
 
 ## 使用
 
@@ -47,13 +48,14 @@ Think ─────────→ Plan ─────────→ Build �
         Non-Goals)       DAG tasks)                           原子归档)
 ```
 
-- **Think**：反噪音追问门禁。产出 `spec.md`（包含具体需求场景、核心数据契约 Invariants、Explicit Non-Goals 负向禁区与默认 Assumptions）。
+- **Think**：范围检查（单体提案 vs. 嵌套 Epic）。产出 `spec.md`（包含具体需求场景、核心数据契约 Invariants、Explicit Non-Goals 负向禁区与默认 Assumptions）。
 - **Plan**：架构权衡推演（Pros & Cons）+ 统一数据流 + 具备依赖拓扑（`Depends On`）与代码上下文锚点的原子化任务，定义明确边界。
 - **Build**：严格按 DAG 拓扑顺序执行。遇 Bug 强制执行**第一性原理只读溯源协议**（查上游契约，禁止下游盲目打补丁）。保持 Git 提交纯净无代号。
-- **Verify**：人机协同选择是否派发独立 Auditor Subagent。提供改动影响面（Blast Radius）分析，异常优先汇报实质性偏差与未完成项；用户签收后同轮执行**原子归档**并生成浓缩 `summary.md`，若未达预期则支持就地修复或推倒重构。
+- **Verify**：人机协同选择是否派发独立 Auditor Subagent。提供改动影响面（Blast Radius）分析，异常优先汇报实质性偏差与未完成项；更新 Epic 路线图或在用户最终签收后同轮执行**原子归档**并生成浓缩 `summary.md`。
 
 ## 工作目录结构
 
+### 1. 单体独立提案（Single Initiative）
 ```
 .beyond-code/
 ├── config.yaml               # commit 偏好设置 (per-task / per-plan / manual)
@@ -61,6 +63,20 @@ Think ─────────→ Plan ─────────→ Build �
 │   ├── spec.md               # 业务需求场景 + 数据契约 + Non-Goals
 │   └── plan.md               # 架构 Pros/Cons + 边界 + DAG tasks 与执行进度
 └── .archive/                 # 已完成并浓缩的 initiative 归档
+```
+
+### 2. 嵌套模块化 Epic 提案（Nested Epic）
+```
+.beyond-code/
+├── config.yaml
+├── <epic-slug>/
+│   ├── spec.md               # 全局架构契约 + 系统不变式 + Non-Goals
+│   ├── roadmap.md            # 子模块 DAG 拓扑路线图与完成状态看板
+│   ├── <sub-slug-1>/         # 子模块 1（继承全局 spec.md）
+│   │   └── plan.md           # 模块架构权衡 + 边界 + DAG tasks 与进度
+│   └── <sub-slug-2>/         # 子模块 2
+│       └── plan.md           # 模块架构权衡 + 边界 + DAG tasks 与进度
+└── .archive/                 # 大提案完成后整包归档
 ```
 
 ## LICENSE

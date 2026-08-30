@@ -4,8 +4,8 @@ description: >
   Use when the user wants to think through requirements before coding,
   asks to design or plan first before implementing, or uses /beyond-code.
   Also when the task spans architectural decisions, complex features,
-  or ambiguous requirements. For straightforward, small changes, apply
-  the principles leanly without unnecessary friction.
+  multi-initiative epics, or ambiguous requirements. For straightforward,
+  small changes, apply the principles leanly without unnecessary friction.
 ---
 
 # Terminology & Global Standards (One Home Per Fact)
@@ -22,7 +22,9 @@ This root skill defines the single authoritative vocabulary and rules for the en
 | SHOULD / SHOULD NOT | Strong guidance — deviate only with documented rationale. |
 | MAY / OPTIONAL | Agent discretion. |
 | EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
-| Initiative | End-to-end unit of work (`.beyond-code/<slug>/`). |
+| Single Initiative | Self-contained unit of work (`.beyond-code/<slug>/`). |
+| Epic (Multi-Initiative) | Large modular system comprising multiple sub-initiatives (`.beyond-code/<epic-slug>/`). |
+| Sub-Initiative | Modular subsystem nested inside an Epic (`.beyond-code/<epic-slug>/<sub-slug>/`). |
 | Spec | Business requirements, data contracts, and Non-Goals (`spec.md`). |
 | Implementation Plan (Plan) | Architecture trade-offs, bounds, tasks, and live progress (`plan.md`). |
 | Task | Atomic execution unit with explicit dependencies (`plan.md`). |
@@ -33,7 +35,7 @@ This root skill defines the single authoritative vocabulary and rules for the en
 
 1. **User Intent Before Code**: Confirm requirements, data contracts, and Explicit Non-Goals before writing non-trivial implementation code.
 2. **First-Principles & Trade-off Rigor**: Ground all designs in fundamental business requirements. Evaluate explicit Pros & Cons and document what was given up.
-3. **Self-Descriptive Clarity (No Internal Code Names)**: Use descriptive titles for requirements and tasks. NEVER use abstract internal codes (`R1`, `T1`, `Gate 1`) in communication or Git history.
+3. **Self-Descriptive Clarity (No Internal Code Names)**: Use descriptive titles for requirements and tasks. NEVER use abstract internal codes (`R1`, `T1`) in communication or Git history.
 4. **Clean Git Hygiene**: Git commit messages MUST describe real engineering changes using standard conventions. They MUST NOT contain any internal process markers (e.g. no `T1`, `beyond-code`, or initiative slugs in commit titles/bodies).
 5. **One Home Per Fact**: Eliminate redundant tracking tables and multiple-source bookkeeping. `plan.md` is the single source of truth for architecture, tasks, and execution progress.
 6. **Human-First Rationale**: When presenting choices, deviations, or trade-offs, state the one-line plain-language human impact first before technical mechanics.
@@ -54,12 +56,24 @@ When the user instructs "just do it", "proceed directly", or gives upfront auton
 
 # Initiative Directory Layout
 
-Each initiative lives under `.beyond-code/<slug>/`:
-
+### 1. Single Initiative Layout
+For standard standalone features:
 ```
 .beyond-code/<slug>/
-  spec.md    Requirements + data contracts + Non-Goals + acceptance criteria (optional for lightweight tasks)
+  spec.md    Requirements + data contracts + Non-Goals (optional for lightweight tasks)
   plan.md    Architecture trade-offs + bounds rule + DAG tasks with checkboxes (Single Source of Truth)
+```
+
+### 2. Nested Epic (Multi-Initiative) Layout
+For large systems containing ≥2 independently deliverable subsystems:
+```
+.beyond-code/<epic-slug>/
+  spec.md                  Global contracts, system invariants, architecture, and Non-Goals
+  roadmap.md               Sub-initiatives DAG roadmap and progress ledger
+  <sub-slug-1>/            Sub-initiative 1 (inherits global contracts from ../spec.md)
+    plan.md                Module trade-offs + bounds + atomic DAG tasks
+  <sub-slug-2>/            Sub-initiative 2
+    plan.md                Module trade-offs + bounds + atomic DAG tasks
 ```
 
 `plan.md` serves as both the blueprint and the live execution ledger (using markdown `- [ ]` / `- [x]` checkboxes).
@@ -67,10 +81,12 @@ Each initiative lives under `.beyond-code/<slug>/`:
 # Stage Transitions
 
 Transitions flow naturally through the sub-skills:
-1. **Unclear request / Requirement clarification** → Load `beyond-code-think` to produce `spec.md`.
-2. **After requirements clear / Spec confirmed** → Load `beyond-code-plan` to produce `plan.md`.
+1. **Unclear request / Requirement clarification** → Load `beyond-code-think` to produce `spec.md` (and `roadmap.md` if an Epic).
+2. **After requirements clear / Spec confirmed** → Load `beyond-code-plan` to produce `plan.md` for the active initiative/sub-initiative.
 3. **Execution phase** → Load `beyond-code-build` to execute tasks in topological order.
-4. **After all tasks complete** → Load `beyond-code-verify` to run baseline checks, independent audit, and atomic archive.
+4. **After all tasks complete** → Load `beyond-code-verify` to run baseline checks, independent audit, and archive.
+   - For a sub-initiative within an Epic: verify, update parent `roadmap.md`, and advance to the next sub-initiative.
+   - For an Epic completion: perform final end-to-end audit and atomically archive the entire `.beyond-code/<epic-slug>/` to `.beyond-code/.archive/<epic-slug>/`.
 
 # Stale Initiative Auto-Sweep & Hygiene
 
@@ -79,9 +95,9 @@ Whenever starting a session or creating a new initiative, inspect `.beyond-code/
 
 # Multi-Initiative & Interruption Handling
 
-- Each distinct goal gets its own directory under `.beyond-code/<slug>/`.
-- If an initiative depends on another, declare `depends_on: [<slug>]` in `plan.md` frontmatter.
-- When resuming after interruption, read `plan.md` directly to identify pending tasks.
+- Standalone initiatives live in `.beyond-code/<slug>/`; nested sub-initiatives live in `.beyond-code/<epic-slug>/<sub-slug>/`.
+- If an initiative or sub-initiative depends on another, declare `depends_on: [<slug>]` in `plan.md` frontmatter.
+- When resuming after interruption, read `roadmap.md` (for Epics) or `plan.md` (for single initiatives) to identify pending tasks.
 
 # Commit Configuration
 
