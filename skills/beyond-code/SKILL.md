@@ -3,10 +3,9 @@ name: beyond-code
 description: >
   Use when the user wants to think through requirements before coding,
   asks to design or plan first before implementing, or uses /beyond-code.
-  Also when the task spans architectural decisions or the user's intent
-  is unclear. The ONLY skip condition: a trivial bug fix in a small-scale
-  project (e.g. a single script under ~100 lines) where the user
-  explicitly says "skip beyond-code".
+  Also when the task spans architectural decisions, complex features,
+  or ambiguous requirements. For straightforward, small changes, apply
+  the principles leanly without unnecessary friction.
 ---
 
 # Terminology & Global Standards (One Home Per Fact)
@@ -18,7 +17,6 @@ This root skill defines the single authoritative vocabulary and rules for the en
 | MUST / REQUIRED | Absolute obligation. Violation = process failure. |
 | MUST NOT | Absolute prohibition. Violation = process failure. |
 | NEVER | Zero-exception prohibition. |
-| HARD-GATE | Prerequisite checkpoint. Blocked = STOP. |
 | STOP | Cease current action. Await user instruction. |
 | ONLY | Exclusive action — no alternative permitted. |
 | SHOULD / SHOULD NOT | Strong guidance — deviate only with documented rationale. |
@@ -26,42 +24,33 @@ This root skill defines the single authoritative vocabulary and rules for the en
 | EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
 | Initiative | End-to-end unit of work (`.beyond-code/<slug>/`). |
 | Spec | Business requirements, data contracts, and Non-Goals (`spec.md`). |
-| Implementation Plan (Plan) | Architecture trade-offs, bounds, and tasks (`plan.md`). |
+| Implementation Plan (Plan) | Architecture trade-offs, bounds, tasks, and live progress (`plan.md`). |
 | Task | Atomic execution unit with explicit dependencies (`plan.md`). |
-| Step | Concrete action or verification command within a task. |
-| Minor Deviation | Implementation detail not in plan that preserves interfaces, bounds, and contracts (e.g. private helper, local type). Logged; non-blocking. |
-| Substantive Deviation | Action altering public APIs, bounds, packages, data contracts, or Non-Goals. Logged AND triggers immediate STOP. |
-
-# HARD-GATE: No Code Before Spec
-
-You MUST NOT write or modify ANY code, create ANY file, or take ANY
-implementation action until `spec.md` is in `confirmed` status AND
-`gate.md` Gate 1 is cleared.
-
-The ONLY exception: a single-function, single-file bug fix where the
-user explicitly says "skip beyond-code".
+| Minor Deviation | Implementation detail that preserves interfaces, bounds, and contracts (e.g. private helper, local type). Non-blocking. |
+| Substantive Deviation | Action altering public APIs, bounds, packages, data contracts, or Non-Goals. Triggers immediate STOP and user review. |
 
 # Core Engineering Principles
 
-1. **First-Principles & Trade-off Rigor**: Ground all designs in fundamental business requirements. Evaluate explicit Pros & Cons and document what was given up.
-2. **Self-Descriptive Clarity (No Internal Code Names)**: Use descriptive titles for requirements and tasks. NEVER use abstract internal codes (`R1`, `T1`, `Gate 1`) in communication or Git history.
-3. **Clean Git Hygiene**: Git commit messages MUST describe real engineering changes using standard conventions. They MUST NOT contain any internal process markers (e.g. no `T1`, `R2`, `beyond-code`, or `gate` in commit titles/bodies).
-4. **Human-First Rationale**: When presenting choices, deviations, or trade-offs, state the one-line plain-language human impact first before technical mechanics.
+1. **User Intent Before Code**: Confirm requirements, data contracts, and Explicit Non-Goals before writing non-trivial implementation code.
+2. **First-Principles & Trade-off Rigor**: Ground all designs in fundamental business requirements. Evaluate explicit Pros & Cons and document what was given up.
+3. **Self-Descriptive Clarity (No Internal Code Names)**: Use descriptive titles for requirements and tasks. NEVER use abstract internal codes (`R1`, `T1`, `Gate 1`) in communication or Git history.
+4. **Clean Git Hygiene**: Git commit messages MUST describe real engineering changes using standard conventions. They MUST NOT contain any internal process markers (e.g. no `T1`, `beyond-code`, or initiative slugs in commit titles/bodies).
+5. **One Home Per Fact**: Eliminate redundant tracking tables and multiple-source bookkeeping. `plan.md` is the single source of truth for architecture, tasks, and execution progress.
+6. **Human-First Rationale**: When presenting choices, deviations, or trade-offs, state the one-line plain-language human impact first before technical mechanics.
 
 # Role & Human-Agent Dynamics
 
 - When intent is ambiguous, ask ONE concrete clarifying question with a recommended default.
 - When the user gives a clear affirmative ("go", "ok", "sure", "looks good", "start", "build it"), treat it as confirmation and proceed immediately without redundant re-asking.
 - When the user asks to skip something non-essential, skip it cleanly.
-- Default to confirming before irreversible actions (out-of-bounds file changes, commits, stage transitions).
+- Default to confirming before irreversible actions (out-of-bounds file changes, breaking commits, architectural pivots).
 
 # "just do it" / Autonomous Pipeline Semantics
 
 When the user instructs "just do it", "proceed directly", or gives upfront autonomy:
-- **Full Discipline**: Execute all stages (Spec, Plan, Bounds cross-validation, and adversarial verification) completely.
-- **Silent Flow**: Set `spec.md` and `plan.md` to `confirmed`, clear respective gates in `gate.md` with timestamps, and advance without pausing for intermediate approvals.
+- **Full Discipline, Zero Ceremony**: Formulate requirements, trade-offs, and tasks directly in `plan.md` (or `spec.md` + `plan.md` for major initiatives) and execute sequentially without pausing for intermediate conversational confirmations.
 - **Alert on Exception**: STOP immediately only if a Substantive Deviation occurs or a hard blocker is encountered.
-- **Final Delivery**: Present the Exception-First Verification Report for final user sign-off.
+- **Final Delivery**: Present the Exception-First Verification Report with fresh baseline command evidence for final user sign-off.
 
 # Initiative Directory Layout
 
@@ -69,73 +58,30 @@ Each initiative lives under `.beyond-code/<slug>/`:
 
 ```
 .beyond-code/<slug>/
-  spec.md    Requirements + data contracts + Non-Goals + acceptance criteria
-  plan.md    Architecture trade-offs + exhaustive bounds + descriptive tasks
-  gate.md    Progress ledger & visual status — single source of truth
+  spec.md    Requirements + data contracts + Non-Goals + acceptance criteria (optional for lightweight tasks)
+  plan.md    Architecture trade-offs + bounds rule + DAG tasks with checkboxes (Single Source of Truth)
 ```
 
-`gate.md` schema MUST follow this structure:
-
-```markdown
----
-slug: <initiative-slug>
-created: <YYYY-MM-DD>
----
-
-# Initiative Status: <slug>
-
-## Gate 1: Spec Confirmed
-- [ ] spec.md created: `.beyond-code/<slug>/spec.md`
-- [ ] User confirmed: `<timestamp>`
-- [ ] Gate cleared
-
-## Gate 2: Plan Ready
-- [ ] plan.md created: `.beyond-code/<slug>/plan.md`
-- [ ] Pre-presentation validation passed
-- [ ] User confirmed: `<timestamp>`
-- [ ] Gate cleared
-
-## Gate 3: Task Execution & Progress
-
-| Task Title | Depends On | Commit | Status |
-|------------|------------|--------|--------|
-| <Task Name> | [] | <hash / —> | [ ⏳ Pending \| 🔄 In-Progress \| ✅ Done ] |
-
-## Deviations
-| Timestamp | Task | Level (Minor / Substantive) | Human Rationale | Deviation Detail |
-|-----------|------|-----------------------------|-----------------|------------------|
-
-## Gate 4: Verification & Acceptance
-- [ ] Automated baseline checks passed (with raw evidence)
-- [ ] Independent Auditor Subagent: [Executed | Skipped by User]
-- [ ] Substantive deviations: [None | User Approved]
-- [ ] User acceptance signed off: `<timestamp>`
-
-## Gaps & Future Work
-- [ ] <description> — <why out of scope> — <suggested approach>
-
-## Archive
-- [ ] Moved to .beyond-code/.archive/<slug>/
-```
+`plan.md` serves as both the blueprint and the live execution ledger (using markdown `- [ ]` / `- [x]` checkboxes).
 
 # Stage Transitions
 
-When a sub-skill completes, return to this file. Read `gate.md` to determine the current gate:
-1. **Unclear request / New initiative** → Initialize `gate.md`, load `beyond-code-think`.
-2. **After spec confirmed (Gate 1 cleared)** → Load `beyond-code-plan`.
-3. **After plan ready (Gate 2 cleared)** → Load `beyond-code-build`.
-4. **After all tasks complete (Gate 3 filled)** → Load `beyond-code-verify`.
+Transitions flow naturally through the sub-skills:
+1. **Unclear request / Requirement clarification** → Load `beyond-code-think` to produce `spec.md`.
+2. **After requirements clear / Spec confirmed** → Load `beyond-code-plan` to produce `plan.md`.
+3. **Execution phase** → Load `beyond-code-build` to execute tasks in topological order.
+4. **After all tasks complete** → Load `beyond-code-verify` to run baseline checks, independent audit, and atomic archive.
 
 # Stale Initiative Auto-Sweep & Hygiene
 
-Whenever starting a session or creating a new initiative, the agent MUST inspect `.beyond-code/`:
-- If any directory has a `gate.md` where **Gate 4 is fully signed off** but still resides in the root `.beyond-code/`, the agent MUST immediately move it to `.beyond-code/.archive/<slug>/` and ensure a `summary.md` exists. Never leave zombie completed initiatives in the active workspace.
+Whenever starting a session or creating a new initiative, inspect `.beyond-code/`:
+- If any completed initiative directory still resides in `.beyond-code/` root, move it to `.beyond-code/.archive/<slug>/` with a concise `summary.md`. Never leave zombie completed initiatives in the active workspace.
 
 # Multi-Initiative & Interruption Handling
 
 - Each distinct goal gets its own directory under `.beyond-code/<slug>/`.
 - If an initiative depends on another, declare `depends_on: [<slug>]` in `plan.md` frontmatter.
-- When resuming after interruption, read `gate.md` as the single source of truth.
+- When resuming after interruption, read `plan.md` directly to identify pending tasks.
 
 # Commit Configuration
 

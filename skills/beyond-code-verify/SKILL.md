@@ -9,7 +9,7 @@ description: >
 
 # Scope & Context
 
-Follow the global terminology, deviation standards, and gate rules defined in `beyond-code/SKILL.md`.
+Follow the global terminology, deviation standards, and principles defined in `beyond-code/SKILL.md`.
 
 # Purpose
 
@@ -19,11 +19,9 @@ blast radius, present an **Exception-First Verification Report**, and execute
 the **Three-Way Acceptance Triage Protocol** to handle acceptance, in-flight fixes,
 or course corrections seamlessly.
 
-# Stage 0: Gate Check
+# Stage 0: Prerequisite Check
 
-Read `.beyond-code/<slug>/gate.md`. Gate 3 MUST show all tasks
-complete with commit hashes. If not, STOP and report: "Not all
-tasks are complete. Return to build stage."
+Read `.beyond-code/<slug>/plan.md`. Confirm all tasks are marked completed (`- [x]`).
 
 # Stage 1: Verification & Independent Auditor Selection
 
@@ -35,20 +33,19 @@ If baseline checks fail, apply the First-Principles Root-Cause Protocol to fix b
 ### 2. Independent Auditor Choice (Human-in-the-Loop)
 Present the baseline test status and ask the user:
 
-> "Baseline checks passed. Would you like to spawn an **Independent Auditor Subagent** to perform an isolated red-team audit (comparing spec.md + plan.md against git diff to catch silent degradation and substantive deviations)? [Recommended for complex changes] (Yes / No)"
+> "Baseline checks passed. Would you like to spawn an **Independent Auditor Subagent** to perform an isolated red-team audit (comparing spec.md/plan.md against git diff to catch silent degradation and substantive deviations)? [Recommended for complex changes] (Yes / No)"
 
 **Branching Logic**:
 - **If User confirms (e.g. "yes", "好", "用", "audit", "check")**:
-  - The agent **MUST** explicitly call the `subagent` tool. NEVER skip or self-audit under this branch.
-  - Inputs to the auditor subagent MUST strictly contain ONLY:
-    1. `.beyond-code/<slug>/spec.md` (requirements, contracts & Non-Goals)
-    2. `.beyond-code/<slug>/plan.md` (trade-offs, bounds & tasks)
-    3. `git diff` against the starting base commit.
-  - The subagent prompt MUST instruct the child agent to execute the 3-dimensional scan (Sections 3.1 - 3.3 below) and format its response as the Exception-First Verification Report (Stage 2).
+  - Call the `subagent` tool. Inputs MUST strictly contain:
+    1. `.beyond-code/<slug>/spec.md` (if present)
+    2. `.beyond-code/<slug>/plan.md`
+    3. `git diff` against the base commit.
+  - Instruct the child agent to execute the 3-dimensional scan (Sections 3.1 - 3.3 below) and format its response as the Exception-First Verification Report.
   - Adopt the subagent's audit findings directly.
 
 - **If User declines or skips (e.g. "no", "不用", "direct", or during autonomous pipeline)**:
-  - The verifying agent performs the 3-dimensional scan directly with strict objectivity.
+  - Perform the 3-dimensional scan directly with strict objectivity.
 
 ### 3. The 3-Dimensional Audit Scan
 
@@ -74,7 +71,7 @@ Distinguish between benign code realities and unauthorized agent discretion:
 
 # Stage 2: Exception-First Verification Report
 
-Present the verification report in this high-signal, self-descriptive structure:
+Present the verification report in this high-signal structure:
 
 ```markdown
 # 🏁 Verification Report: <slug>
@@ -109,7 +106,7 @@ Present the verification report in this high-signal, self-descriptive structure:
 ### 🚦 Next Steps (Please choose):
 1. **Accept & Archive**: Everything matches expectations → Proceed to archive.
 2. **In-Flight Fix**: Behavior or UX doesn't match intent → Describe the gap, agent fixes in-place.
-3. **Course Correction / Re-scope**: Fundamental mismatch → Archive as superseded, start fresh spec.
+3. **Course Correction / Re-scope**: Fundamental mismatch → Archive as superseded, start fresh.
 ```
 
 # Stage 3: Three-Way Acceptance Triage Protocol
@@ -118,32 +115,20 @@ Evaluate the user's response:
 
 ### 🟢 Branch 1: User Accepts (e.g. "looks good", "通过", "ok", "archive")
 The agent **MUST immediately in the SAME turn** execute the atomic archiving workflow:
-1. Update `gate.md` Gate 4 with user sign-off timestamp.
-2. Generate `.beyond-code/<slug>/summary.md` (delivered features, key trade-offs, remaining gaps).
-3. Move directory: `mv .beyond-code/<slug> .beyond-code/.archive/<slug>`.
-4. Confirm completion: "Initiative successfully archived to `.beyond-code/.archive/<slug>/`. Ready for the next initiative!"
+1. Generate `.beyond-code/<slug>/summary.md` (delivered features, key trade-offs, remaining gaps).
+2. Move directory: `mv .beyond-code/<slug> .beyond-code/.archive/<slug>`.
+3. Confirm completion: "Initiative successfully archived to `.beyond-code/.archive/<slug>/`. Ready for the next initiative!"
 **NEVER defer or skip the `mv` command once acceptance is received.**
 
 ### 🟡 Branch 2: In-Flight Remediation (e.g. "this error message is wrong", "still missing edge case")
 If the implementation does not meet the user's practical expectations:
 1. **Do NOT archive**. Keep the initiative active.
-2. Append a Remediation Task to `plan.md` and `gate.md` describing the exact human adjustment needed.
+2. Append a Remediation Task to `plan.md` describing the exact adjustment needed.
 3. Apply the **First-Principles Root-Cause Protocol** to implement the fix.
 4. Re-run tests, re-verify with fresh evidence, and re-present the Verification Report.
 
 ### 🔴 Branch 3: Course Correction (e.g. "this whole approach won't work", "abandon this")
 If the concept itself is fundamentally flawed:
-1. Update `gate.md` with:
-   ```markdown
-   ## Status: SUPERSEDED / ABORTED
-   <timestamp> — <Reason for pivoting>
-   ```
-2. Generate `summary.md` documenting what was learned and why it was superseded.
-3. Move directory to `.beyond-code/.archive/<slug>/`.
-4. Ask the user if they would like to start a fresh initiative (e.g. `<slug>-v2`) with the new requirements.
-
-# Stage 4: Post-Archive Review
-
-After successful archiving:
-1. Review accumulated Gaps in `summary.md` / `gate.md` with the user: "Any out-of-scope gaps worth spinning into a new initiative?"
-2. If `.beyond-code/.project/` exists, ask if project docs should be refreshed via `beyond-code-project-docs`.
+1. Generate `summary.md` documenting what was learned and why it was superseded.
+2. Move directory to `.beyond-code/.archive/<slug>/`.
+3. Ask the user if they would like to start a fresh initiative with the updated requirements.

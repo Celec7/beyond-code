@@ -4,28 +4,25 @@ description: >
   Use when clarifying requirements before coding, the user's intent
   is unclear, needs to narrow down what to build, or entering the think phase
   of beyond-code. Covers Scope Check, first-principles data contracts,
-  Explicit Non-Goals, self-descriptive scenario specs, and gate.md management.
+  Explicit Non-Goals, and self-descriptive scenario specs.
 ---
 
 # Scope Constraint
 
-You MUST NOT write or modify ANY code. Your ONLY outputs in this stage are
-`spec.md` and `gate.md` updates. Implementation happens in the build stage.
+You MUST NOT write or modify implementation code during this stage. Your ONLY output in this stage is
+`.beyond-code/<slug>/spec.md`. Detailed file-by-file task planning belongs to the plan stage.
 
 # Purpose
 
 Clarify user intent from **first principles**, establish clear data contracts,
 and carve out the **negative space (Explicit Non-Goals)** to prevent agent drift.
 Capture the result in `spec.md` using self-descriptive requirements and verifiable acceptance criteria.
-Do NOT plan detailed file-by-file implementation tasks — that belongs to the plan stage.
 
-# Stage 0: Gate Check
+# Stage 0: Prerequisite Check
 
-Read `.beyond-code/<slug>/gate.md`.
+Check `.beyond-code/<slug>/spec.md`.
 
-If Gate 1 is already cleared, report this and STOP — the initiative
-should proceed to plan, not re-think. If gate.md is missing, create
-it with an empty Gate 1 checklist.
+If `spec.md` already exists and has `status: confirmed`, STOP and report: "Spec is already confirmed. Proceed to plan."
 
 # Stage 1: Scope Check
 
@@ -33,7 +30,7 @@ Before asking clarifying questions, assess: does this feature contain
 ≥2 independently deliverable subsystems?
 
 If YES — ask the user to confirm the subsystem split before writing
-any spec. Present a Module Breakdown:
+the full spec. Present a Module Breakdown:
 
 ```markdown
 | Subsystem Module | Description | Initiative Slug | depends_on |
@@ -48,10 +45,10 @@ If NO — proceed to Stage 2.
 
 # Stage 2: Foundational Clarification (Anti-Noise Rule)
 
-Clarifying questions MUST be high-leverage and focused on architecture/user intent.
+Clarifying questions MUST be high-leverage and focused on architecture and user intent.
 
 **Questioning prohibitions**:
-- **MUST NOT ask micro-implementation details**: Never ask about function names, variable naming, file organization, or internal library choices that the agent can decide in Plan.
+- **MUST NOT ask micro-implementation details**: Never ask about function names, variable naming, file organization, or internal library choices that the agent can decide during planning.
 - **MUST NOT ask 0.01% extreme-edge cases**: Never derail discussion with ultra-rare failure permutations. Address realistic edge cases via explicit **Assumptions**.
 
 **When you do need to ask**:
@@ -61,8 +58,7 @@ Clarifying questions MUST be high-leverage and focused on architecture/user inte
 
 # Stage 3: Write spec.md (No Internal Code Names)
 
-Generate `.beyond-code/<slug>/spec.md` using this self-descriptive template.
-**RULE**: Use descriptive scenario titles instead of abstract code names (e.g. use `### Scenario: Refresh Expired Access Token` instead of `R1`).
+Generate `.beyond-code/<slug>/spec.md` using this self-descriptive template:
 
 ```markdown
 ---
@@ -75,8 +71,7 @@ status: draft | confirmed
 ## 1. Core Scenarios & Acceptance Criteria
 
 ### Scenario: [Descriptive Title — MUST use concrete action verbs]
-<!-- Banned vague verbs: support, integrate, enhance, optimize, handle, manage, process, facilitate, leverage, utilize -->
-<!-- Preferred concrete verbs: create, return, validate, reject, transform, emit, store, delete -->
+<!-- Concrete verbs: create, return, validate, reject, transform, emit, store, delete -->
 - **Given**: [Preconditions / initial state]
 - **When**: [Action or trigger event]
 - **Then**: [Observable, verifiable result]
@@ -113,17 +108,7 @@ If the Scope Check identified sub-systems, append:
 |------------------|-----------------|------------|
 ```
 
-# Stage 4: Update gate.md
-
-Append to Gate 1:
-
-```markdown
-## Gate 1: Spec Confirmed
-- [x] spec.md created: `.beyond-code/<slug>/spec.md`
-- [ ] User confirmed
-```
-
-# Stage 5: Present and Get Confirmation
+# Stage 4: Present and Get Confirmation
 
 Present a clean, human-first summary of what was captured:
 1. **Core Capabilities & Scenarios**
@@ -133,17 +118,10 @@ Present a clean, human-first summary of what was captured:
 Ask:
 > "Does this spec match your intent? Please confirm to proceed to Plan, or let me know what to adjust."
 
-Set `spec.md` status to `draft`. Change to `confirmed` ONLY after the user agrees.
+Set `spec.md` status to `draft`. Change to `confirmed` once the user agrees.
 
-When confirmed, update `gate.md` Gate 1:
-```markdown
-- [x] User confirmed: <timestamp>
-- [x] Gate cleared
-```
+Then proceed to `beyond-code-plan`.
 
-Then return to the `beyond-code` router.
-
-If the user says "just do it" / "proceed" (Autonomous Pipeline):
+If operating in autonomous mode ("just do it"):
 - Write `spec.md` with status `confirmed`.
-- Mark `gate.md` Gate 1 as cleared with timestamp.
-- Return to the router immediately to advance to the plan stage.
+- Advance directly to the plan stage.
