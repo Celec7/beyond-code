@@ -4,7 +4,7 @@ description: >
   Use when verifying implementation results, running automated checks,
   offering adversarial independent audits, or entering the verify phase
   of beyond-code. Covers exception-first verification, blast radius analysis,
-  semantic seam analysis, anti-laziness scans, automated evidence, and lean archiving.
+  three-way acceptance triage, in-flight remediation, and atomic archiving.
 ---
 
 # Scope & Context
@@ -14,9 +14,10 @@ Follow the global terminology, deviation standards, and gate rules defined in `b
 # Purpose
 
 Verify that the implementation matches the agreed spec and plan with zero
-silent compromises. Offer the user an independent auditor option (via subagent)
-to audit the code diff against spec and plan, evaluate blast radius, filter benign implementation seams,
-and generate an **Exception-First Verification Report**.
+silent compromises. Offer an independent auditor option (via subagent), analyze
+blast radius, present an **Exception-First Verification Report**, and execute
+the **Three-Way Acceptance Triage Protocol** to handle acceptance, in-flight fixes,
+or course corrections seamlessly.
 
 # Stage 0: Gate Check
 
@@ -29,7 +30,7 @@ tasks are complete. Return to build stage."
 ### 1. Automated Baseline Checks (EVIDENCE BEFORE CLAIMS)
 Detect project tooling and execute in order: `lint → typecheck → build → test`.
 MUST capture raw outputs. NEVER claim success without running fresh commands.
-If baseline checks fail, return to the root-cause fix loop or report blockers.
+If baseline checks fail, apply the First-Principles Root-Cause Protocol to fix before presenting.
 
 ### 2. Independent Auditor Choice (Human-in-the-Loop)
 Present the baseline test status and ask the user:
@@ -103,54 +104,46 @@ Present the verification report in this high-signal, self-descriptive structure:
 <summary>🟢 Minor Implementation Details (Collapsed)</summary>
 - <List of internal glue / minor helper adjustments>
 </details>
+
+---
+### 🚦 Next Steps (Please choose):
+1. **Accept & Archive**: Everything matches expectations → Proceed to archive.
+2. **In-Flight Fix**: Behavior or UX doesn't match intent → Describe the gap, agent fixes in-place.
+3. **Course Correction / Re-scope**: Fundamental mismatch → Archive as superseded, start fresh spec.
 ```
 
-# Stage 3: Remediation or User Acceptance
+# Stage 3: Three-Way Acceptance Triage Protocol
 
-- **If Substantive Deviations or Silent Degradation are found**:
-  STOP and present the findings to the user. Ask:
-  "1) Should the agent fix these gaps to match the original plan?
-   2) Or do you approve these implementation changes?"
-  Do NOT proceed to archive until user explicitly signs off or gaps are resolved.
+Evaluate the user's response:
 
-- **If all checks pass cleanly**:
-  Ask the user for final confirmation: "All requirements and automated checks passed with clean audit evidence. Confirm to archive?"
+### 🟢 Branch 1: User Accepts (e.g. "looks good", "通过", "ok", "archive")
+The agent **MUST immediately in the SAME turn** execute the atomic archiving workflow:
+1. Update `gate.md` Gate 4 with user sign-off timestamp.
+2. Generate `.beyond-code/<slug>/summary.md` (delivered features, key trade-offs, remaining gaps).
+3. Move directory: `mv .beyond-code/<slug> .beyond-code/.archive/<slug>`.
+4. Confirm completion: "Initiative successfully archived to `.beyond-code/.archive/<slug>/`. Ready for the next initiative!"
+**NEVER defer or skip the `mv` command once acceptance is received.**
 
-Update `gate.md`:
+### 🟡 Branch 2: In-Flight Remediation (e.g. "this error message is wrong", "still missing edge case")
+If the implementation does not meet the user's practical expectations:
+1. **Do NOT archive**. Keep the initiative active.
+2. Append a Remediation Task to `plan.md` and `gate.md` describing the exact human adjustment needed.
+3. Apply the **First-Principles Root-Cause Protocol** to implement the fix.
+4. Re-run tests, re-verify with fresh evidence, and re-present the Verification Report.
 
-```markdown
-## Gate 4: Verification
-- [ ] Automated baseline checks passed (with raw evidence)
-- [ ] Independent Auditor Subagent: [Executed | Skipped by User]
-- [ ] Substantive deviations: [None | User Approved]
-- [ ] Requirements verified: user confirmed
-```
+### 🔴 Branch 3: Course Correction (e.g. "this whole approach won't work", "abandon this")
+If the concept itself is fundamentally flawed:
+1. Update `gate.md` with:
+   ```markdown
+   ## Status: SUPERSEDED / ABORTED
+   <timestamp> — <Reason for pivoting>
+   ```
+2. Generate `summary.md` documenting what was learned and why it was superseded.
+3. Move directory to `.beyond-code/.archive/<slug>/`.
+4. Ask the user if they would like to start a fresh initiative (e.g. `<slug>-v2`) with the new requirements.
 
-# Stage 4: Lean Archive & Summary Synthesis
+# Stage 4: Post-Archive Review
 
-When user explicitly confirms acceptance:
-
-1. Create `.beyond-code/.archive/` if needed.
-2. Generate a lean `summary.md` inside `.beyond-code/<slug>/`:
-   - Summary of delivered capabilities.
-   - Key trade-offs made.
-   - Remaining Gaps / Out-of-scope items.
-3. MOVE the entire initiative directory to `.beyond-code/.archive/<slug>/`.
-4. Verify the move:
-```bash
-ls .beyond-code/.archive/<slug>/
-```
-5. Update `gate.md`:
-```markdown
-## Archive
-- [x] Moved to .beyond-code/.archive/<slug>/
-```
-
-If the move fails, MUST report the error and STOP.
-
-# Stage 5: Post-Archive & Gap Review
-
-1. Review accumulated Gaps in `gate.md` and present them to the user:
-   "These out-of-scope gaps were recorded during this initiative. Any worth pursuing as new initiatives?"
-2. If `.beyond-code/.project/` exists, ask: "Should I update any project docs?" If yes, load `beyond-code-project-docs`.
-3. The initiative is complete. If no other active initiatives exist, ask what to work on next.
+After successful archiving:
+1. Review accumulated Gaps in `summary.md` / `gate.md` with the user: "Any out-of-scope gaps worth spinning into a new initiative?"
+2. If `.beyond-code/.project/` exists, ask if project docs should be refreshed via `beyond-code-project-docs`.

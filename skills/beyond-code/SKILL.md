@@ -105,11 +105,11 @@ created: <YYYY-MM-DD>
 | Timestamp | Task | Level (Minor / Substantive) | Human Rationale | Deviation Detail |
 |-----------|------|-----------------------------|-----------------|------------------|
 
-## Gate 4: Verification
+## Gate 4: Verification & Acceptance
 - [ ] Automated baseline checks passed (with raw evidence)
 - [ ] Independent Auditor Subagent: [Executed | Skipped by User]
 - [ ] Substantive deviations: [None | User Approved]
-- [ ] Requirements verified: user confirmed
+- [ ] User acceptance signed off: `<timestamp>`
 
 ## Gaps & Future Work
 - [ ] <description> — <why out of scope> — <suggested approach>
@@ -125,6 +125,11 @@ When a sub-skill completes, return to this file. Read `gate.md` to determine the
 2. **After spec confirmed (Gate 1 cleared)** → Load `beyond-code-plan`.
 3. **After plan ready (Gate 2 cleared)** → Load `beyond-code-build`.
 4. **After all tasks complete (Gate 3 filled)** → Load `beyond-code-verify`.
+
+# Stale Initiative Auto-Sweep & Hygiene
+
+Whenever starting a session or creating a new initiative, the agent MUST inspect `.beyond-code/`:
+- If any directory has a `gate.md` where **Gate 4 is fully signed off** but still resides in the root `.beyond-code/`, the agent MUST immediately move it to `.beyond-code/.archive/<slug>/` and ensure a `summary.md` exists. Never leave zombie completed initiatives in the active workspace.
 
 # Multi-Initiative & Interruption Handling
 
