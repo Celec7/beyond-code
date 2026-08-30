@@ -1,5 +1,7 @@
 # Beyond Code
 
+[![skills.sh](https://skills.sh/b/Celec7/beyond-code)](https://skills.sh/Celec7/beyond-code)
+
 A lightweight, natural-language-driven interaction standard and skill suite for coding agents.
 
 Make the agent understand your intent. Ground architecture in first-principles trade-offs. Constrain every action to declared bounds. Demand fresh evidence over claims.

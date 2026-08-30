@@ -1,5 +1,7 @@
 # Beyond Code
 
+[![skills.sh](https://skills.sh/b/Celec7/beyond-code)](https://skills.sh/Celec7/beyond-code)
+
 一个轻量、自然语言驱动的 Coding Agent 交互规范与工作流套件。
 
 让 Agent 明确你的需求。从第一性原理权衡方案。严格在边界内执行。要求 Agent 拿出证据而非口头声称。
