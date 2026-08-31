@@ -3,7 +3,7 @@ name: beyond-code-think
 description: >
   Use when clarifying requirements before coding, the user's intent
   is unclear, needs to narrow down what to build, or entering the think phase
-  of beyond-code. Covers Scope Check (Epic vs. Single Initiative), first-principles
+  of beyond-code. Covers Scope Check (Epic vs. Single Scope), first-principles
   data contracts, Explicit Non-Goals, and self-descriptive scenario specs.
 ---
 
@@ -16,42 +16,42 @@ the specification file (`spec.md`, and `roadmap.md` if an Epic). Detailed task p
 
 Clarify user intent from **first principles**, establish clear data contracts,
 and carve out the **negative space (Explicit Non-Goals)** to prevent agent drift.
-For complex, multi-modular requirements, decompose them into a nested **Epic & Sub-Initiatives** hierarchy.
+For complex, multi-modular requirements, decompose them into a nested **Epic & Scopes** hierarchy.
 
 # Stage 0: Prerequisite Check
 
-Check `.beyond-code/<slug>/spec.md` or `.beyond-code/<epic-slug>/spec.md`.
+Check `.beyond-code/<scope-slug>/spec.md` or `.beyond-code/<epic-slug>/spec.md`.
 
 If `spec.md` already exists and has `status: confirmed`, STOP and report: "Spec is already confirmed. Proceed to plan."
 
-# Stage 1: Scope Check (Single Initiative vs. Epic Decomposition)
+# Stage 1: Scope Check (Single Scope vs. Epic Decomposition)
 
 Before asking clarifying questions, assess: does this feature contain
 ≥2 independently deliverable subsystems / modules?
 
-### If NO (Single Initiative):
-Proceed to Stage 2 with a single slug: `.beyond-code/<slug>/`.
+### If NO (Single Scope):
+Proceed to Stage 2 with a single slug: `.beyond-code/<scope-slug>/`.
 
 ### If YES (Nested Epic):
 1. Create the parent Epic directory: `.beyond-code/<epic-slug>/`.
 2. Write the global architecture, data contracts, and Non-Goals in `.beyond-code/<epic-slug>/spec.md`.
-3. Create `.beyond-code/<epic-slug>/roadmap.md` to establish the sub-initiatives DAG and sequence:
+3. Create `.beyond-code/<epic-slug>/roadmap.md` to establish the scopes DAG and sequence:
 
 ```markdown
 # Epic Roadmap: <epic-slug>
 
-## Sub-Initiatives
-- [ ] `<sub-slug-1>`: [One-line summary of subsystem] (depends_on: [])
-- [ ] `<sub-slug-2>`: [One-line summary of subsystem] (depends_on: [`<sub-slug-1>`])
+## Scopes
+- [ ] `<sub-scope-1>`: [One-line summary of subsystem] (depends_on: [])
+- [ ] `<sub-scope-2>`: [One-line summary of subsystem] (depends_on: [`<sub-scope-1>`])
 
 ## Execution Flow
-1. Run `<sub-slug-1>` (Plan → Build → Verify)
-2. Run `<sub-slug-2>` (Plan → Build → Verify)
+1. Run `<sub-scope-1>` (Plan → Build → Verify)
+2. Run `<sub-scope-2>` (Plan → Build → Verify)
 3. Run Epic End-to-End Acceptance & Archive
 ```
 
-Ask the user to confirm the Epic breakdown before proceeding to the first sub-initiative:
-> "This feature spans multiple subsystems. I have broken it down into an Epic (`<epic-slug>`) with the sub-initiatives above. Please confirm to proceed with `<sub-slug-1>`, or let me know what to adjust."
+Ask the user to confirm the Epic breakdown before proceeding to the first sub-scope:
+> "This feature spans multiple subsystems. I have broken it down into an Epic (`<epic-slug>`) with the scopes above. Please confirm to proceed with `<sub-scope-1>`, or let me know what to adjust."
 
 # Stage 2: Foundational Clarification (Anti-Noise Rule)
 
@@ -68,11 +68,11 @@ Clarifying questions MUST be high-leverage and focused on architecture and user 
 
 # Stage 3: Write spec.md (No Internal Code Names)
 
-Generate `spec.md` (`.beyond-code/<slug>/spec.md` or `.beyond-code/<epic-slug>/spec.md`) using this self-descriptive template:
+Generate `spec.md` (`.beyond-code/<scope-slug>/spec.md` or `.beyond-code/<epic-slug>/spec.md`) using this self-descriptive template:
 
 ```markdown
 ---
-slug: <initiative-slug | epic-slug>
+slug: <scope-slug | epic-slug>
 status: draft | confirmed
 ---
 
@@ -112,7 +112,7 @@ status: draft | confirmed
 # Stage 4: Present and Get Confirmation
 
 Present a clean, human-first summary of what was captured:
-1. **Core Capabilities & Scenarios** (and Sub-initiatives breakdown if Epic)
+1. **Core Capabilities & Scenarios** (and Scopes breakdown if Epic)
 2. **Explicit Non-Goals (What we are NOT doing)**
 3. **Key Assumptions & Invariants**
 
@@ -121,7 +121,7 @@ Ask:
 
 Set `spec.md` status to `draft`. Change to `confirmed` once the user agrees.
 
-Then proceed to `beyond-code-plan` for the active initiative (or first sub-initiative: `.beyond-code/<epic-slug>/<sub-slug-1>/`).
+Then proceed to `beyond-code-plan` for the active scope (or first sub-scope: `.beyond-code/<epic-slug>/<sub-scope-1>/`).
 
 If operating in autonomous mode ("just do it"):
 - Write `spec.md` with status `confirmed`.

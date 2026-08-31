@@ -4,7 +4,7 @@
 
 A lightweight, natural-language-driven interaction standard and skill suite for coding agents.
 
-Make the agent understand your intent. Ground architecture in first-principles trade-offs. Constrain every action to declared bounds. Demand fresh evidence over claims. Supports both single initiatives and nested modular Epics.
+Make the agent understand your intent. Ground architecture in first-principles trade-offs. Constrain every action to declared bounds. Demand fresh evidence over claims. Supports both single Scopes and nested modular Epics.
 
 English | [中文](README_zh-CN.md)
 
@@ -12,17 +12,17 @@ English | [中文](README_zh-CN.md)
 
 In my vibe coding practice, I tried several AI-process-driven skills ([OpenSpec](https://github.com/Fission-AI/OpenSpec), [superpowers](https://github.com/obra/superpowers), [gsd-core](https://github.com/open-gsd/gsd-core)).
 
-While powerful, real-world development highlighted recurring problems: some lacked deep architectural trade-off evaluations and polluted Git history with internal jargon (`R1`, `T1`); some trusted the agent too much and let silent degradation or half-baked TODOs slip through; others required heavy CLI interactions or duplicated markdown tracking tables that consumed precious token context; and completed initiatives frequently lingered as zombie directories without being archived.
+While powerful, real-world development highlighted recurring friction points: some lacked architectural trade-off evaluations and polluted Git history with internal jargon (`R1`, `T1`); some trusted the agent too much and let silent degradation or half-baked TODOs slip through; others required heavy CLI interactions or duplicated markdown tracking tables that consumed token context; and completed directories frequently lingered as zombie folders without being archived.
 
 I designed Beyond Code to bridge these gaps: **no bespoke CLI tools, no token-wasting bureaucracy. Instead, it enforces first-principles engineering, clean self-descriptive naming, single-source-of-truth progress tracking, and adversarial verification so developers and agents collaborate with clarity and deliver production-grade code.**
 
 ## Philosophy
 
 1. **User intent before code (No Code Before Spec)**: Confirm requirements, core contracts, and Explicit Non-Goals before coding non-trivial features.
-2. **First-Principles & Trade-off Rigor**: Ground architecture in fundamental business needs. Evaluate explicit Pros & Cons and document what was given up.
+2. **First-Principles & Trade-off Rigor**: Ground architecture in fundamental requirements. Evaluate explicit Pros & Cons and document what was given up.
 3. **Self-Descriptive Clarity (No Internal Code Names)**: Abolish abstract code names (`R1`, `T1`). Use self-descriptive scenario and task titles. **NEVER leak internal process markers into Git commit history.**
 4. **One Home Per Fact**: Eliminate duplicate tracking tables and checklists. `plan.md` is the single source of truth for architecture, tasks, and live progress.
-5. **Modular Decomposition (Nested Epics)**: Support breaking complex features into a clean nested Epic with modular sub-initiatives executed along a DAG roadmap.
+5. **Modular Decomposition (Nested Epics & Scopes)**: Support breaking complex features into a clean nested Epic with modular sub-scopes executed along a DAG roadmap.
 6. **Plan exhaustively, execute within bounds**: Tasks explicitly declare affected files and interfaces. Substantive deviations trigger an immediate STOP for user review.
 7. **First-Principles Root-Cause Protocol**: When bugs occur during execution, trace upstream callers and contracts instead of slapping downstream band-aids.
 8. **Independent Adversarial Verification**: Verify results with an optional isolated Auditor Subagent (free from builder confirmation bias) to filter benign glue code and highlight substantive deviations.
@@ -48,33 +48,33 @@ Think ─────────→ Plan ─────────→ Build �
         Non-Goals)       DAG tasks)                           atomic archive)
 ```
 
-- **Think**: Scope check (Single Initiative vs. Nested Epic). Produces `spec.md` with self-descriptive scenarios, Core Data Contracts & Invariants, Explicit Non-Goals, and reasonable Assumptions.
+- **Think**: Scope check (Single Scope vs. Nested Epic). Produces `spec.md` with self-descriptive scenarios, Core Data Contracts & Invariants, Explicit Non-Goals, and reasonable Assumptions.
 - **Plan**: Architecture trade-offs (Pros & Cons) + unified data flows + atomic tasks with dependency DAGs (`Depends On`) and context code anchors. Clear implementation bounds.
 - **Build**: Executes strictly in topological DAG order. Enforces the **First-Principles Root-Cause Protocol** (trace upstream callers; no blind symptom patching). Keeps Git history clean of internal markers.
 - **Verify**: User-guided independent Auditor Subagent choice. Analyzes Blast Radius, prioritizes substantive deviations and silent degradation in an Exception-First report; updates Epic roadmap or executes atomic archiving with lean `summary.md` on sign-off.
 
 ## Directory Structure
 
-### 1. Single Initiative
+### 1. Single Scope
 ```
 .beyond-code/
 ├── config.yaml               # commit preferences (per-task / per-plan / manual)
-├── <slug>/
+├── <scope-slug>/
 │   ├── spec.md               # requirements + data contracts + Non-Goals
 │   └── plan.md               # architecture Pros/Cons + bounds + DAG tasks & progress
-└── .archive/                 # completed and summarized initiatives
+└── .archive/                 # completed and summarized scopes
 ```
 
-### 2. Nested Epic (Multi-Initiative Modular Structure)
+### 2. Nested Epic (Multi-Scope Modular Structure)
 ```
 .beyond-code/
 ├── config.yaml
 ├── <epic-slug>/
 │   ├── spec.md               # global architecture + data contracts + Non-Goals
-│   ├── roadmap.md            # sub-initiatives DAG roadmap & completion status
-│   ├── <sub-slug-1>/         # sub-initiative 1 (inherits global contracts)
+│   ├── roadmap.md            # scopes DAG roadmap & completion status
+│   ├── <sub-scope-1>/        # sub-scope 1 (inherits global contracts)
 │   │   └── plan.md           # module trade-offs + bounds + DAG tasks & progress
-│   └── <sub-slug-2>/         # sub-initiative 2
+│   └── <sub-scope-2>/        # sub-scope 2
 │       └── plan.md           # module trade-offs + bounds + DAG tasks & progress
 └── .archive/                 # whole Epic archived upon completion
 ```

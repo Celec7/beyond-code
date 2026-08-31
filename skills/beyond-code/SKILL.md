@@ -4,7 +4,7 @@ description: >
   Use when the user wants to think through requirements before coding,
   asks to design or plan first before implementing, or uses /beyond-code.
   Also when the task spans architectural decisions, complex features,
-  multi-initiative epics, or ambiguous requirements. For straightforward,
+  multi-scope epics, or ambiguous requirements. For straightforward,
   small changes, apply the principles leanly without unnecessary friction.
 ---
 
@@ -22,21 +22,21 @@ This root skill defines the single authoritative vocabulary and rules for the en
 | SHOULD / SHOULD NOT | Strong guidance — deviate only with documented rationale. |
 | MAY / OPTIONAL | Agent discretion. |
 | EVIDENCE BEFORE CLAIMS | No success claim without fresh command output. |
-| Single Initiative | Self-contained unit of work (`.beyond-code/<slug>/`). |
-| Epic (Multi-Initiative) | Large modular system comprising multiple sub-initiatives (`.beyond-code/<epic-slug>/`). |
-| Sub-Initiative | Modular subsystem nested inside an Epic (`.beyond-code/<epic-slug>/<sub-slug>/`). |
-| Spec | Business requirements, data contracts, and Non-Goals (`spec.md`). |
+| Scope | Self-contained unit of work (`.beyond-code/<scope-slug>/`). |
+| Epic | System spanning ≥2 modular sub-scopes (`.beyond-code/<epic-slug>/`). |
+| Sub-Scope | Modular subsystem nested inside an Epic (`.beyond-code/<epic-slug>/<sub-scope-slug>/`). |
+| Spec | Requirements, data contracts, and Non-Goals (`spec.md`). |
 | Implementation Plan (Plan) | Architecture trade-offs, bounds, tasks, and live progress (`plan.md`). |
 | Task | Atomic execution unit with explicit dependencies (`plan.md`). |
-| Minor Deviation | Implementation detail that preserves interfaces, bounds, and contracts (e.g. private helper, local type). Non-blocking. |
+| Minor Deviation | Implementation detail preserving interfaces, bounds, and contracts (e.g. private helper, local type). Non-blocking. |
 | Substantive Deviation | Action altering public APIs, bounds, packages, data contracts, or Non-Goals. Triggers immediate STOP and user review. |
 
 # Core Engineering Principles
 
 1. **User Intent Before Code**: Confirm requirements, data contracts, and Explicit Non-Goals before writing non-trivial implementation code.
-2. **First-Principles & Trade-off Rigor**: Ground all designs in fundamental business requirements. Evaluate explicit Pros & Cons and document what was given up.
+2. **First-Principles & Trade-off Rigor**: Ground all designs in fundamental requirements. Evaluate explicit Pros & Cons and document what was given up.
 3. **Self-Descriptive Clarity (No Internal Code Names)**: Use descriptive titles for requirements and tasks. NEVER use abstract internal codes (`R1`, `T1`) in communication or Git history.
-4. **Clean Git Hygiene**: Git commit messages MUST describe real engineering changes using standard conventions. They MUST NOT contain any internal process markers (e.g. no `T1`, `beyond-code`, or initiative slugs in commit titles/bodies).
+4. **Clean Git Hygiene**: Git commit messages MUST describe real engineering changes using standard conventions. They MUST NOT contain any internal process markers (e.g. no `T1`, `beyond-code`, or scope slugs in commit titles/bodies).
 5. **One Home Per Fact**: Eliminate redundant tracking tables and multiple-source bookkeeping. `plan.md` is the single source of truth for architecture, tasks, and execution progress.
 6. **Human-First Rationale**: When presenting choices, deviations, or trade-offs, state the one-line plain-language human impact first before technical mechanics.
 
@@ -50,29 +50,29 @@ This root skill defines the single authoritative vocabulary and rules for the en
 # "just do it" / Autonomous Pipeline Semantics
 
 When the user instructs "just do it", "proceed directly", or gives upfront autonomy:
-- **Full Discipline, Zero Ceremony**: Formulate requirements, trade-offs, and tasks directly in `plan.md` (or `spec.md` + `plan.md` for major initiatives) and execute sequentially without pausing for intermediate conversational confirmations.
+- **Full Discipline, Zero Ceremony**: Formulate requirements, trade-offs, and tasks directly in `plan.md` (or `spec.md` + `plan.md` for major work) and execute sequentially without pausing for intermediate conversational confirmations.
 - **Alert on Exception**: STOP immediately only if a Substantive Deviation occurs or a hard blocker is encountered.
 - **Final Delivery**: Present the Exception-First Verification Report with fresh baseline command evidence for final user sign-off.
 
-# Initiative Directory Layout
+# Directory Layout
 
-### 1. Single Initiative Layout
+### 1. Single Scope Layout
 For standard standalone features:
 ```
-.beyond-code/<slug>/
+.beyond-code/<scope-slug>/
   spec.md    Requirements + data contracts + Non-Goals (optional for lightweight tasks)
   plan.md    Architecture trade-offs + bounds rule + DAG tasks with checkboxes (Single Source of Truth)
 ```
 
-### 2. Nested Epic (Multi-Initiative) Layout
+### 2. Nested Epic (Multi-Scope) Layout
 For large systems containing ≥2 independently deliverable subsystems:
 ```
 .beyond-code/<epic-slug>/
   spec.md                  Global contracts, system invariants, architecture, and Non-Goals
-  roadmap.md               Sub-initiatives DAG roadmap and progress ledger
-  <sub-slug-1>/            Sub-initiative 1 (inherits global contracts from ../spec.md)
+  roadmap.md               Scopes DAG roadmap and progress ledger
+  <sub-scope-1>/           Sub-scope 1 (inherits global contracts from ../spec.md)
     plan.md                Module trade-offs + bounds + atomic DAG tasks
-  <sub-slug-2>/            Sub-initiative 2
+  <sub-scope-2>/           Sub-scope 2
     plan.md                Module trade-offs + bounds + atomic DAG tasks
 ```
 
@@ -82,22 +82,22 @@ For large systems containing ≥2 independently deliverable subsystems:
 
 Transitions flow naturally through the sub-skills:
 1. **Unclear request / Requirement clarification** → Load `beyond-code-think` to produce `spec.md` (and `roadmap.md` if an Epic).
-2. **After requirements clear / Spec confirmed** → Load `beyond-code-plan` to produce `plan.md` for the active initiative/sub-initiative.
+2. **After requirements clear / Spec confirmed** → Load `beyond-code-plan` to produce `plan.md` for the active scope/sub-scope.
 3. **Execution phase** → Load `beyond-code-build` to execute tasks in topological order.
 4. **After all tasks complete** → Load `beyond-code-verify` to run baseline checks, independent audit, and archive.
-   - For a sub-initiative within an Epic: verify, update parent `roadmap.md`, and advance to the next sub-initiative.
+   - For a sub-scope within an Epic: verify, update parent `roadmap.md`, and advance to the next sub-scope.
    - For an Epic completion: perform final end-to-end audit and atomically archive the entire `.beyond-code/<epic-slug>/` to `.beyond-code/.archive/<epic-slug>/`.
 
-# Stale Initiative Auto-Sweep & Hygiene
+# Stale Directory Auto-Sweep & Hygiene
 
-Whenever starting a session or creating a new initiative, inspect `.beyond-code/`:
-- If any completed initiative directory still resides in `.beyond-code/` root, move it to `.beyond-code/.archive/<slug>/` with a concise `summary.md`. Never leave zombie completed initiatives in the active workspace.
+Whenever starting a session or creating a new scope/epic, inspect `.beyond-code/`:
+- If any completed directory still resides in `.beyond-code/` root, move it to `.beyond-code/.archive/<slug>/` with a concise `summary.md`. Never leave zombie completed directories in the active workspace.
 
-# Multi-Initiative & Interruption Handling
+# Multi-Scope & Interruption Handling
 
-- Standalone initiatives live in `.beyond-code/<slug>/`; nested sub-initiatives live in `.beyond-code/<epic-slug>/<sub-slug>/`.
-- If an initiative or sub-initiative depends on another, declare `depends_on: [<slug>]` in `plan.md` frontmatter.
-- When resuming after interruption, read `roadmap.md` (for Epics) or `plan.md` (for single initiatives) to identify pending tasks.
+- Standalone scopes live in `.beyond-code/<scope-slug>/`; nested sub-scopes live in `.beyond-code/<epic-slug>/<sub-scope-slug>/`.
+- If a scope or sub-scope depends on another, declare `depends_on: [<scope-slug>]` in `plan.md` frontmatter.
+- When resuming after interruption, read `roadmap.md` (for Epics) or `plan.md` (for single scopes) to identify pending tasks.
 
 # Commit Configuration
 

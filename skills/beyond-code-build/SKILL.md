@@ -5,12 +5,12 @@ description: >
   task, tracking progress directly in plan.md, or entering the build
   phase of beyond-code. Covers topological task execution, first-principles
   root-cause diagnosis, clean Git hygiene, and deviation management.
-  Supports both single initiatives and nested sub-initiatives inside an Epic.
+  Supports both single scopes and nested sub-scopes inside an Epic.
 ---
 
 # Scope & Context
 
-Execute tasks strictly from `plan.md` (`.beyond-code/<slug>/plan.md` or `.beyond-code/<epic-slug>/<sub-slug>/plan.md`) within the declared Implementation Bounds.
+Execute tasks strictly from `plan.md` (`.beyond-code/<scope-slug>/plan.md` or `.beyond-code/<epic-slug>/<sub-scope-slug>/plan.md`) within the declared Implementation Bounds.
 Follow the global rules and definitions in `beyond-code/SKILL.md`.
 
 # Purpose
@@ -64,7 +64,7 @@ For each task in `plan.md`:
 
 When creating Git commits:
 - Use standard Conventional Commits or repo-native conventions (e.g. `feat(auth): implement JWT refresh token endpoint`).
-- **MUST NOT leak internal process markers**: NEVER include `T1`, `Task 1`, `R1`, `Scenario 2`, `beyond-code`, or initiative slugs in commit messages.
+- **MUST NOT leak internal process markers**: NEVER include `T1`, `Task 1`, `R1`, `Scenario 2`, `beyond-code`, or scope slugs in commit messages.
 - Commits must read like high-quality commits authored by an expert human software engineer.
 
 # Substantive Deviation Alert

@@ -5,7 +5,7 @@ description: >
   offering adversarial independent audits, or entering the verify phase
   of beyond-code. Covers exception-first verification, blast radius analysis,
   three-way acceptance triage, in-flight remediation, and atomic archiving.
-  Supports both single initiatives and nested sub-initiatives inside an Epic.
+  Supports both single scopes and nested sub-scopes inside an Epic.
 ---
 
 # Scope & Context
@@ -75,7 +75,7 @@ Distinguish between benign code realities and unauthorized agent discretion:
 Present the verification report in this high-signal structure:
 
 ```markdown
-# 🏁 Verification Report: <slug | sub-slug>
+# 🏁 Verification Report: <scope-slug | sub-scope-slug>
 
 ### 🎯 Blast Radius & Affected Surface
 - **Core Logic**: `<list of primary modified files>`
@@ -116,25 +116,25 @@ Evaluate the user's response:
 
 ### 🟢 Branch 1: User Accepts (e.g. "looks good", "通过", "ok", "archive")
 
-#### For a Sub-Initiative inside an Epic (`.beyond-code/<epic-slug>/<sub-slug>/`):
-1. Mark the sub-initiative complete in parent `.beyond-code/<epic-slug>/roadmap.md`:
+#### For a Sub-Scope inside an Epic (`.beyond-code/<epic-slug>/<sub-scope-slug>/`):
+1. Mark the sub-scope complete in parent `.beyond-code/<epic-slug>/roadmap.md`:
    ```markdown
-   - [x] `<sub-slug>`: [Completed]
+   - [x] `<sub-scope-slug>`: [Completed]
    ```
-2. Check `roadmap.md` for remaining sub-initiatives:
-   - If more sub-initiatives remain: "Sub-initiative `<sub-slug>` verified! Ready to proceed to next: `<next-sub-slug>`." Load `beyond-code-plan` for `<next-sub-slug>`.
-   - If all sub-initiatives are complete: Proceed to **Epic Final Sign-Off & Archive** below.
+2. Check `roadmap.md` for remaining sub-scopes:
+   - If more sub-scopes remain: "Sub-scope `<sub-scope-slug>` verified! Ready to proceed to next: `<next-sub-scope-slug>`." Load `beyond-code-plan` for `<next-sub-scope-slug>`.
+   - If all sub-scopes are complete: Proceed to **Epic Final Sign-Off & Archive** below.
 
-#### For a Standalone Initiative or Epic Final Sign-Off:
+#### For a Standalone Scope or Epic Final Sign-Off:
 The agent **MUST immediately in the SAME turn** execute the atomic archiving workflow:
-1. Generate `.beyond-code/<slug>/summary.md` (or `.beyond-code/<epic-slug>/summary.md`) covering delivered capabilities, key trade-offs, and remaining gaps.
-2. Move directory: `mv .beyond-code/<slug> .beyond-code/.archive/<slug>` (or for Epic: `mv .beyond-code/<epic-slug> .beyond-code/.archive/<epic-slug>`).
-3. Confirm completion: "Successfully archived to `.beyond-code/.archive/<slug>/`. Ready for the next initiative!"
+1. Generate `.beyond-code/<scope-slug>/summary.md` (or `.beyond-code/<epic-slug>/summary.md`) covering delivered capabilities, key trade-offs, and remaining gaps.
+2. Move directory: `mv .beyond-code/<scope-slug> .beyond-code/.archive/<scope-slug>` (or for Epic: `mv .beyond-code/<epic-slug> .beyond-code/.archive/<epic-slug>`).
+3. Confirm completion: "Successfully archived to `.beyond-code/.archive/<scope-slug>/`. Ready for the next scope!"
 **NEVER defer or skip the `mv` command once acceptance is received.**
 
 ### 🟡 Branch 2: In-Flight Remediation (e.g. "this error message is wrong", "still missing edge case")
 If the implementation does not meet practical expectations:
-1. **Do NOT archive**. Keep the initiative active.
+1. **Do NOT archive**. Keep the scope active.
 2. Append a Remediation Task to `plan.md` describing the exact adjustment needed.
 3. Apply the **First-Principles Root-Cause Protocol** to implement the fix.
 4. Re-run tests, re-verify with fresh evidence, and re-present the Verification Report.
@@ -142,5 +142,5 @@ If the implementation does not meet practical expectations:
 ### 🔴 Branch 3: Course Correction (e.g. "this whole approach won't work", "abandon this")
 If the concept itself is fundamentally flawed:
 1. Generate `summary.md` documenting what was learned and why it was superseded.
-2. Move directory to `.beyond-code/.archive/<slug>/`.
-3. Ask the user if they would like to start a fresh initiative with the updated requirements.
+2. Move directory to `.beyond-code/.archive/<scope-slug>/`.
+3. Ask the user if they would like to start a fresh scope with the updated requirements.
