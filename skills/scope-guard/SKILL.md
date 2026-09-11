@@ -1,6 +1,6 @@
 ---
 name: scope-guard
-description: Prevent agent scope creep and over-engineering by defining explicit negative space (Non-Goals) and high-leverage alignment. Use when clarifying requirements, designing features, or narrowing down what to build.
+description: Use when fixing the requirements, deciding what a change deliberately leaves out, or testing whether the ask is broader than the change it should produce.
 ---
 
 # Scope Guard
@@ -11,7 +11,7 @@ This skill carves out the negative space and enforces high-signal communication.
 
 ## 1. Carve the Negative Space (Explicit Non-Goals)
 
-Before planning or implementing any non-trivial work, write down 2 to 4 **Explicit Non-Goals**:
+Before planning or implementing any non-trivial work, state 2 to 4 **Explicit Non-Goals** in your reply to the developer:
 - What are we deliberately NOT building in this change?
 - Which edge cases, platforms, or feature variations are explicitly deferred?
 - Which existing modules, tables, or APIs must remain untouched?

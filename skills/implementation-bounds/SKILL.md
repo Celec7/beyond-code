@@ -1,6 +1,6 @@
 ---
 name: implementation-bounds
-description: Enforce strict file, dependency, and interface boundaries during coding. Halts immediately on substantive deviations before unintended changes land. Use when starting an implementation, refactoring, or guarding against scope creep.
+description: Use before code lands, when declaring target files and touched interfaces, or when stopping the moment an edit leaves that scope.
 ---
 
 # Implementation Bounds

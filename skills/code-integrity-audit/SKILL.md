@@ -1,6 +1,6 @@
 ---
 name: code-integrity-audit
-description: Adversarial diff audit to catch AI shortcuts, mock stubs, and silent logic degradation before completion. Use before finishing a task, submitting a PR, or verifying implementation completeness.
+description: Use before claiming a task complete, committing, or opening a PR, to red-team the diff for stubs, swallowed errors, weakened tests, and mock returns that were never real.
 ---
 
 # Code Integrity Audit
@@ -23,7 +23,7 @@ Inspect the newly added lines (the green lines in `git diff <base>...HEAD`):
 ### 1. Placeholders and Stubs
 Search the diff for shortcuts left behind:
 - Comments containing `TODO`, `FIXME`, `STUB`, or `temporary`.
-- Functions containing `throw new Error("Not implemented")` or empty `{}` bodies.
+- Functions whose entire body is `throw new Error("Not implemented")`, a bare `return`, or a bare `pass`.
 - Hardcoded test returns inside production logic to make tests pass artificially.
 
 ### 2. Deceptive Logic and Swallowed Errors

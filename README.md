@@ -22,13 +22,13 @@ Beyond Code gives you five focused, lightweight skills. Each does one job well, 
 
 ## The 5 Core Skills
 
-| Skill | When to Use | What It Does |
-| :--- | :--- | :--- |
-| **[`scope-guard`](skills/scope-guard/SKILL.md)** | Before coding, while clarifying requirements | **Define what NOT to do**: Declare 2 to 4 explicit Non-Goals to stop scope creep. Surface key technical choices with recommendations, without jumping ahead before you are ready. |
-| **[`implementation-bounds`](skills/implementation-bounds/SKILL.md)** | During implementation and refactoring | **Keep edits within bounds**: Limit changes to the declared target files. Allow local test and export updates, but stop immediately if touching external modules or public APIs. |
-| **[`root-cause-debugging`](skills/root-cause-debugging/SKILL.md)** | When tests fail or runtime errors occur | **Fix at the source, no band-aids**: Check interface contracts, trace upstream along the call chain to find where bad data originated, and fix it there. Prohibit downstream `?.` or empty catch patches. |
-| **[`code-integrity-audit`](skills/code-integrity-audit/SKILL.md)** | Before finishing a task or opening a PR | **Catch shortcuts in diffs**: Check newly added lines for lingering `TODO`s, fake stubs, swallowed errors, and tautological tests. Demand fresh command output as proof. |
-| **[`canonical-docs`](skills/canonical-docs/SKILL.md)** | When documenting architecture, contracts, or syncing docs | **Living reference, zero slop**: Name files directly by technical subject, keep one home per fact, and anchor in core types. Strictly prohibit task plans, historical war stories, and rotting status annotations from `docs/`. |
+| Skill | When to Use |
+| :--- | :--- |
+| **[`scope-guard`](skills/scope-guard/SKILL.md)** | Clarifying requirements, or an ask that is broader than the change it should produce |
+| **[`implementation-bounds`](skills/implementation-bounds/SKILL.md)** | Before code lands, or the moment an edit leaves the declared target scope |
+| **[`root-cause-debugging`](skills/root-cause-debugging/SKILL.md)** | A test fails, code throws, a result is wrong, or a bug keeps recurring |
+| **[`code-integrity-audit`](skills/code-integrity-audit/SKILL.md)** | Claiming a task complete, committing, or opening a PR |
+| **[`canonical-docs`](skills/canonical-docs/SKILL.md)** | Writing or auditing `docs/`, or a document and its code have drifted apart |
 
 ## Installation
 

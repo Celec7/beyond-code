@@ -1,6 +1,6 @@
 ---
 name: root-cause-debugging
-description: Protocol for diagnosing bugs, test failures, and unexpected state from first principles. Enforces upstream tracing, contract review, and source-level fixes while prohibiting symptom-masking band-aids. Use when a test fails, code throws, or unexpected behavior occurs.
+description: Use when a test fails, code throws, a result is wrong, or a bug keeps recurring, and especially when the obvious fix is a null check, a fallback default, or an empty catch.
 ---
 
 # Root-Cause Debugging

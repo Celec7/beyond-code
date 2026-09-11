@@ -1,103 +1,86 @@
 ---
 name: canonical-docs
-description: Maintain authoritative project documentation in docs/ (architecture, domain rules, subsystem specs, contracts, defensive patterns, and glossary). Enforces domain-driven naming, type-anchored contracts, seam-provider-consumer boundaries, and present-tense accuracy while rejecting ephemeral process slop. Use when documenting system design, syncing docs with code changes, or auditing docs for drift.
+description: Use when writing, updating, or auditing docs/, or when a document and the code it describes have drifted apart.
 ---
 
 # Canonical Docs
 
-`docs/` records the current architecture, boundaries, and verified system contracts. It is an authoritative technical reference for the living codebase, not an implementation tracker, task ledger, or meeting log.
+`docs/` records how the system works today: architecture, subsystem contracts, cross-cutting invariants, and domain vocabulary. It is not a task tracker, a progress log, or a record of how the code got here.
 
-Each fact has one home: the document whose job it is. Everywhere else, link there. Never duplicate full definitions.
+## Place the Document Before Writing
 
-## The Slop Checklist (Strictly Prohibited in `docs/`)
+A document's subject and its position in the tree fix its scope. Name the file after the concrete technical subject it governs. Do not sort documents into categories the tree does not have.
 
-Keep ephemeral process debris out of formal documentation:
+A fact lives in the tier whose job it is. Elsewhere, link there.
 
-- **No task plans or schedules**: Task breakdowns, sprint checklists, and progress markers belong in ephemeral conversation context. They rot once code lands.
-- **No narrated history or war stories**: State what the code does now. Never write "previously", "was renamed from", "used to be", or "refactored because". Git commits carry history.
-- **No rotting status annotations**: Never write "implemented!", "WIP", or "future plan: ...". Unimplemented ideas are not contracts; implemented capabilities are current facts.
-- **No reasoning transcripts**: Delete deduction paths, intermediate benchmark logs, and rejected local alternatives. Keep the resulting contract and its immutable rules.
-- **No private implementation sprawl**: Single-function mechanics stay in code comments and docstrings. Formal docs record cross-module seams, invariant rules, and subsystem boundaries.
+| Tier | Owns | Does not belong |
+| :--- | :--- | :--- |
+| Root `docs/<subject>.md` | System-wide architecture, cross-cutting contracts, shared invariants, domain vocabulary | Type definitions, single-module detail |
+| `docs/subsystems/<name>.md` | One subsystem reference: type definitions, semantics, failure behavior | Architecture narration |
+| `docs/cookbook/<action>.md` | Procedures with numbered verification steps | Design rationale |
+| `docs/postmortem/<slug>.md` | Incident sequence, evidence, prevention | Teaching sequences |
+| Package README | That package's contract: config, semantics, limitations | Other packages' concerns |
+| JSDoc and code comments | Single-function mechanics, non-obvious local rationale | Anything a caller reads as a contract |
 
-## Document Naming and Placement
+A package contract lives beside the package. It does not move into `docs/`. When a subject is too small for its own page, extend the page that already owns it rather than creating a new file.
 
-A document's subject and tree position fix its scope. Do not force documents into arbitrary artificial categories. Name files directly after the concrete technical subject they govern (e.g. `architecture.md`, `chess-domain.md`, `agent-lifecycle.md`, `engine.md`, `defensive-patterns.md`, `testing.md`).
+## What Does Not Belong in `docs/`
 
-- **Root documents (`docs/<subject>.md`)**: Living references for system-wide architecture, core domain models, cross-cutting contracts, and shared invariants.
-- **Nested directories (`docs/<tier>/<subject>.md`)**: Use subdirectories only when distinct groups naturally emerge:
-  - `subsystems/<name>.md`: Detailed reference per subsystem. Root architecture links here instead of expanding lower-level detail.
-  - `cookbook/<action>.md`: Step-by-step procedures with numbered verification checks.
-  - `postmortem/<NNNN-slug>.md`: Incident timelines, evidence, and prevention.
+A line earns its place by stating a fact about how the code runs today. These do not:
 
-## Core Content Patterns
+- **Task plans and progress**: checklists, breakdowns, status markers, completion percentages. These rot the moment the work lands.
+- **Narrated history**: "previously", "renamed from", "used to", "no longer". State the current fact. Commits carry the history.
+- **Status annotations in prose**: "implemented", "WIP", "future: ...".
+- **Reasoning transcripts**: deduction paths, intermediate benchmarks, rejected alternatives. Keep the resulting contract and its rules.
+- **Restated catalogs and types**: when source, a generator, or a type is authoritative, link to it. A hand-copied table drifts.
+- **Emphasis everywhere**: bold and capitals lose their meaning when every other clause carries them. Mark the clause that changes behavior.
+- **Private mechanics**: single-function behavior stays in JSDoc. `docs/` carries cross-module seams and invariant rules.
 
-Whatever document you are authoring, apply these concrete structural patterns where relevant:
+A conflict you cannot settle yet is not a fact. Leave it out, or state it explicitly as unresolved.
 
-### 1. Contract and Capability Boundaries
-When describing a module, interface, or protocol, establish the boundary:
-- State what the capability governs, who provides it, who consumes it, and what is explicitly outside this vocabulary.
-- Anchor in **verbatim core types**: embed exported interfaces and data shapes as the factual bedrock. Use prose solely for timing, preconditions, normalization, and failure semantics.
+## Writing the Prose
 
-### 2. Defensive Bug-Class Rules
-When documenting non-obvious failure modes or fragile cross-module invariants:
-- Use an imperative propositional heading (e.g. `## Report orthogonal outcomes independently`).
-- Explain the subtle defect mechanism (what callers mistakenly assume) and the concrete invariant rule that prevents recurrence.
+Write with density. Every sentence states a fact about the running system.
 
-### 3. Canonical Domain Vocabulary
-When introducing domain concepts:
-- Define what a concept IS in 1 to 2 sentences, not what it does.
-- List forbidden synonyms under `_Avoid_` (e.g. for `Order`, `_Avoid_: Purchase, Transaction`).
-- Exclude general programming terms; include only concepts unique to this domain.
+- **Name actors and actions**: who calls whom, who owns a resource, who cleans up.
+- **State timing and ordering**: synchronous or asynchronous, what must precede what, which order is guaranteed.
+- **State negative guarantees**: what the system refuses to do, and what a caller must not assume. A refusal is as load-bearing as a capability.
+- **State failure behavior**: does it throw, return null, emit a terminal chunk, retry, or fall back. Never leave the outcome ambiguous.
 
-## How to Write the Prose
+## Content Patterns
 
-Write with density. Every sentence must state a living fact. Cut the filler, keep the contract:
-
-- **Name actors and actions directly**: Who calls whom, who owns resources, who handles cleanup.
-- **Define timing and ordering**: Explicitly state synchronous vs asynchronous guarantees, race-ordering rules, and sequence dependencies.
-- **State negative guarantees**: What the system deliberately refuses to do. The explicit no-s are as valuable as the yes-s.
-- **Specify failure behavior**: State whether an error throws, emits a terminal chunk, returns null, or triggers fallback recovery. Never leave error outcomes ambiguous.
-
-## Golden Sample
+A contract section states what a seam governs, who provides it, who consumes it, and what sits outside it. It names its `Source:` path and carries the exported type verbatim, never retyped from memory. Prose covers only what the type does not: timing, preconditions, normalization, and failure semantics.
 
 ```markdown
-# Process Sandbox
+## Process sandbox seam
 
-The process-sandbox seam wraps a subprocess argv in a file-effect policy without coupling consumers to a platform runner. `sandbox-local` supplies the OS backends; `shell` consumers run inside it. Containers and remote execution are sibling implementations, not providers of this seam.
+The process-sandbox seam wraps a subprocess argv in a file-effect policy without
+coupling consumers to a platform runner. `sandbox-local` supplies the OS
+backends; `shell` consumers run inside it.
 
 Source: `packages/sandbox/src/index.ts`
 
-## Modes and enforcement
+`SandboxMode` governs filesystem effects only. Network and process visibility
+are outside this vocabulary.
 
-`SandboxMode` governs filesystem effects only. Network and process visibility are outside this vocabulary.
-
-\```ts
+```ts
 type SandboxMode = 'read-only' | 'workspace-write' | 'danger-full-access'
-\```
-
-Enforcement is a reported fact. `full` means the backend governs every file effect promised by the mode; `partial` means an older kernel or host configuration governs only a subset. Callers requiring an absolute boundary must reject or surface `partial`.
 ```
 
-## Metadata Standard
-
-Every formal Markdown document starts with standardized YAML front matter:
-
-```yaml
----
-title: <Clear Document Title>
-doc_type: architecture | contract | capability-seams | subsystem | api | defensive-patterns | glossary | cookbook | postmortem | maintenance-rules
-status: current
-authority: normative | descriptive | evidence | maintenance
-canonical: true
-summary: <One sentence stating the single responsibility of this document.>
----
+Enforcement is a reported fact. `full` means the backend governs every file
+effect promised by the mode; `partial` means an older kernel or host
+configuration governs only a subset.
 ```
 
-Do not put authors, timestamps, PR links, or completion percentages in metadata. They rot immediately.
+A bug-class rule gets an imperative heading (`## Report orthogonal outcomes independently`), the mistaken assumption callers make, and the invariant that prevents recurrence.
 
-## Writing and Syncing Rules
+A domain concept gets one or two sentences saying what it IS, not what it does, plus its forbidden synonyms under `_Avoid_` (`Order`, `_Avoid_: Purchase, Transaction`). General programming terms stay out.
 
-- **Present tense only**: Describe living mechanisms as they operate today.
-- **Sync on code drift**: Update the owning doc whenever public APIs, schemas, invariants, or module compositions change.
-- **Code vs doc conflicts**: Update documentation to match verified code reality. Never mask drift with speculative future promises.
-- **Machine-checkable links**: Cross-reference using relative Markdown paths.
+## Keeping Documents True
+
+- **Present tense**: describe live mechanisms as they operate today.
+- **Update the owner first**: when a public API, schema, invariant, or module composition changes, update its owning document before anything that links to it.
+- **Code wins**: when a document and verified code disagree, the document is wrong. Never paper over drift with a promise about the future.
+- **Link by relative path**: cross-references use repository-relative Markdown paths, so a moved file breaks its links loudly.
+
+Adopt the repository's documentation standard for metadata and taxonomy. When a repository has none, keep front matter to a description and a type, and let the file path carry the rest. Match the examples already in that repository before inventing a new layout.

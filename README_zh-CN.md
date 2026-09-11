@@ -22,13 +22,13 @@
 
 ## 5 个核心技能
 
-| 技能 | 什么时候用 | 它负责干什么 |
-| :--- | :--- | :--- |
-| **[`scope-guard`](skills/scope-guard/SKILL.md)** | 开始动手写代码前、梳理需求时 | **先定好“不做什么”**：列出 2~4 个明确不做的范围，防止 AI 擅自扩圈和过度设计；有架构疑问主动找开发者确认，不自顾自闷头乱写。 |
-| **[`implementation-bounds`](skills/implementation-bounds/SKILL.md)** | 写代码、做重构的全过程 | **管住修改范围，越界立即停下**：圈定只准改动哪几个核心文件。允许改动同模块的测试和本地导出，但一旦要改外部无关模块、公网接口或加依赖，必须立刻停下问你。 |
-| **[`root-cause-debugging`](skills/root-cause-debugging/SKILL.md)** | 报错、测试挂掉、排查 Bug 时 | **从源头修，禁止打创可贴**：先检查两边契约谁对谁错，顺着调用链向上查出是谁传了脏数据并彻底修好；绝对禁止在下游滥用 `?.` 或空 `catch` 掩盖问题。 |
-| **[`code-integrity-audit`](skills/code-integrity-audit/SKILL.md)** | 功能做完准备提交或提 PR 前 | **代码防偷懒审查**：专门检查新增的 git diff，揪出偷懒留下的 `TODO`、空桩代码、被吞掉的异常以及作弊测试；必须跑测试命令并出示真实的终端输出。 |
-| **[`canonical-docs`](skills/canonical-docs/SKILL.md)** | 编写系统设计、代码变更后同步文档、审查文档漂移时 | **真实客观，拒绝淤泥**：以技术主题直接命名，单点事实归宿；严格禁止临时任务计划、历史战争故事和虚假状态记入 `docs/`；以当前代码和类型签名作为事实基座，保持活契约同步。 |
+| 技能 | 什么时候用 |
+| :--- | :--- |
+| **[`scope-guard`](skills/scope-guard/SKILL.md)** | 梳理需求时，或者这个需求比它该改的东西大得多 |
+| **[`implementation-bounds`](skills/implementation-bounds/SKILL.md)** | 动手写代码前，或者改动已经越出圈定的文件范围 |
+| **[`root-cause-debugging`](skills/root-cause-debugging/SKILL.md)** | 测试挂了、代码报错、结果不对，或者同一个 Bug 反复出现 |
+| **[`code-integrity-audit`](skills/code-integrity-audit/SKILL.md)** | 准备说做完了、准备提交、或者准备提 PR 时 |
+| **[`canonical-docs`](skills/canonical-docs/SKILL.md)** | 编写或审查 `docs/`，或者文档和代码已经对不上了 |
 
 ## 安装
 
