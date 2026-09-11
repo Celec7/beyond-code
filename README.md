@@ -1,83 +1,50 @@
-# Beyond Code
+# Beyond Code: Engineering Guardrails Suite
 
 [![skills.sh](https://skills.sh/b/Celec7/beyond-code)](https://skills.sh/Celec7/beyond-code)
 
-A lightweight, natural-language-driven interaction standard and skill suite for coding agents.
-
-Make the agent understand your intent. Ground architecture in first-principles trade-offs. Constrain every action to declared bounds. Demand fresh evidence over claims. Supports both single Scopes and nested modular Epics.
+A lean suite of high-standard engineering mental models and hard guardrails for coding agents.
 
 English | [中文](README_zh-CN.md)
 
 ## Why This Exists
 
-In my vibe coding practice, I tried several AI-process-driven skills ([OpenSpec](https://github.com/Fission-AI/OpenSpec), [superpowers](https://github.com/obra/superpowers), [gsd-core](https://github.com/open-gsd/gsd-core)).
+As reasoning models and autonomous coding agents grow increasingly capable, heavy bureaucratic scaffolding (rigid tabular forms, directory state machines, and multi-stage ceremonies) yields diminishing returns and clutters token context.
 
-While powerful, real-world development highlighted recurring friction points: some lacked architectural trade-off evaluations and polluted Git history with internal jargon (`R1`, `T1`); some trusted the agent too much and let silent degradation or half-baked TODOs slip through; others required heavy CLI interactions or duplicated markdown tracking tables that consumed token context; and completed directories frequently lingered as zombie folders without being archived.
+Modern agents do not need micromanagement. What they need are **sharp mental models, clear boundaries, and non-negotiable engineering disciplines**:
+- Knowing when to stop and align instead of guessing.
+- Refusing to slap band-aid null checks down at the crash site.
+- Staying strictly within declared boundaries during implementation.
+- Auditing diffs with adversarial skepticism before shipping.
 
-I designed Beyond Code to bridge these gaps: **no bespoke CLI tools, no token-wasting bureaucracy. Instead, it enforces first-principles engineering, clean self-descriptive naming, single-source-of-truth progress tracking, and adversarial verification so developers and agents collaborate with clarity and deliver production-grade code.**
+Inspired by the modular simplicity of Matt Pocock's engineering skills, Beyond Code strips away the procedural red tape and distills core software engineering intuitions into **four composable, zero-overhead atomic skills**.
 
-## Philosophy
+## The Skill Suite
 
-1. **User intent before code (No Code Before Spec)**: Confirm requirements, core contracts, and Explicit Non-Goals before coding non-trivial features.
-2. **First-Principles & Trade-off Rigor**: Ground architecture in fundamental requirements. Evaluate explicit Pros & Cons and document what was given up.
-3. **Self-Descriptive Clarity (No Internal Code Names)**: Abolish abstract code names (`R1`, `T1`). Use self-descriptive scenario and task titles. **NEVER leak internal process markers into Git commit history.**
-4. **One Home Per Fact**: Eliminate duplicate tracking tables and checklists. `plan.md` is the single source of truth for architecture, tasks, and live progress.
-5. **Modular Decomposition (Nested Epics & Scopes)**: Support breaking complex features into a clean nested Epic with modular sub-scopes executed along a DAG roadmap.
-6. **Plan exhaustively, execute within bounds**: Tasks explicitly declare affected files and interfaces. Substantive deviations trigger an immediate STOP for user review.
-7. **First-Principles Root-Cause Protocol**: When bugs occur during execution, trace upstream callers and contracts instead of slapping downstream band-aids.
-8. **Independent Adversarial Verification**: Verify results with an optional isolated Auditor Subagent (free from builder confirmation bias) to filter benign glue code and highlight substantive deviations.
-9. **Three-Way Acceptance Triage & Atomic Archiving**: User sign-off triggers immediate atomic archiving in the same turn to eliminate zombie folders, with seamless support for in-flight remediation and course correction.
-10. **Evidence, not claims (EVIDENCE BEFORE CLAIMS)**: Demand fresh command outputs and raw evidence before declaring success.
+| Skill | Trigger / When to Use | Core Intuition |
+| :--- | :--- | :--- |
+| **[`root-cause-debugging`](skills/root-cause-debugging/SKILL.md)** | When tests fail, code throws, or unexpected behavior occurs | **Fix at the source, never band-aid**: Trace upstream along the call chain, align contracts, and resolve defects at the origin instead of masking nulls downstream with `?.` or empty catches. |
+| **[`implementation-bounds`](skills/implementation-bounds/SKILL.md)** | When implementing features, refactoring, or guarding scope | **Declare bounds, stop on substantive deviations**: Stick to the declared target files and interfaces. Allow cohesive local edits (tests, barrel exports), but halt immediately if cross-domain files or public APIs are breached. |
+| **[`code-integrity-audit`](skills/code-integrity-audit/SKILL.md)** | Before completing a task, submitting a PR, or verifying changes | **Adversarial diff verification**: Inspect new additions for AI shortcuts, mock stubs, swallowed errors, and tautological tests. Demand fresh command output (evidence before claims). |
+| **[`scope-guard`](skills/scope-guard/SKILL.md)** | When defining requirements, planning, or clarifying intent | **Carve the negative space**: Define 2 to 4 Explicit Non-Goals to prevent scope creep. Engage in high-leverage technical alignment while keeping the developer in control of pacing. |
 
-## Install
+## Installation
+
+Install all skills into your coding agent (Claude Code, Codex, DSH, Cursor, etc.):
 
 ```bash
 npx skills add Celec7/beyond-code
 ```
 
-Triggered via natural language (e.g. "let's plan first", "follow beyond-code"). When instructed to "just do it", the agent activates the **Autonomous Pipeline**: full discipline, zero conversational interruptions, alerting only on substantive exceptions.
+Or selectively install individual skills you want.
 
-## Flow
+## How to Use
 
-```
-Think ─────────→ Plan ─────────→ Build ─────────→ Verify (Auditor)
-  │                │                │                  │
-  └── spec.md      └── plan.md      └── DAG tasks +    └── independent audit +
-       (scenarios +     (Pros/Cons +     read-only trace +   blast radius +
-        contracts +      bounds +         clean Git commits   3-way triage +
-        Non-Goals)       DAG tasks)                           atomic archive)
-```
+Each skill is self-contained and model-invoked by default. They can be used independently or paired seamlessly with your favorite workflows (such as TDD, PR review, or Matt Pocock's skill suite):
 
-- **Think**: Scope check (Single Scope vs. Nested Epic). Produces `spec.md` with self-descriptive scenarios, Core Data Contracts & Invariants, Explicit Non-Goals, and reasonable Assumptions.
-- **Plan**: Architecture trade-offs (Pros & Cons) + unified data flows + atomic tasks with dependency DAGs (`Depends On`) and context code anchors. Clear implementation bounds.
-- **Build**: Executes strictly in topological DAG order. Enforces the **First-Principles Root-Cause Protocol** (trace upstream callers; no blind symptom patching). Keeps Git history clean of internal markers.
-- **Verify**: User-guided independent Auditor Subagent choice. Analyzes Blast Radius, prioritizes substantive deviations and silent degradation in an Exception-First report; updates Epic roadmap or executes atomic archiving with lean `summary.md` on sign-off.
-
-## Directory Structure
-
-### 1. Single Scope
-```
-.beyond-code/
-├── config.yaml               # commit preferences (per-task / per-plan / manual)
-├── <scope-slug>/
-│   ├── spec.md               # requirements + data contracts + Non-Goals
-│   └── plan.md               # architecture Pros/Cons + bounds + DAG tasks & progress
-└── .archive/                 # completed and summarized scopes
-```
-
-### 2. Nested Epic (Multi-Scope Modular Structure)
-```
-.beyond-code/
-├── config.yaml
-├── <epic-slug>/
-│   ├── spec.md               # global architecture + data contracts + Non-Goals
-│   ├── roadmap.md            # scopes DAG roadmap & completion status
-│   ├── <sub-scope-1>/        # sub-scope 1 (inherits global contracts)
-│   │   └── plan.md           # module trade-offs + bounds + DAG tasks & progress
-│   └── <sub-scope-2>/        # sub-scope 2
-│       └── plan.md           # module trade-offs + bounds + DAG tasks & progress
-└── .archive/                 # whole Epic archived upon completion
-```
+- **During feature design**: `scope-guard` helps you and the agent agree on explicit boundaries and Non-Goals before coding.
+- **During execution**: `implementation-bounds` keeps the agent focused on the primary files, preventing unauthorized dependency additions or schema drift.
+- **When code breaks**: `root-cause-debugging` forces the agent to trace bad data back to its upstream producer rather than adding ad-hoc `?.` or fallback defaults.
+- **Before sign-off**: `code-integrity-audit` runs a rigorous, skeptical check over the diff to ensure no stubs or faked tests slip through.
 
 ## License
 
