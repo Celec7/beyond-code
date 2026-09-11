@@ -80,6 +80,7 @@ A domain concept gets one or two sentences saying what it IS, not what it does, 
 
 - **Present tense**: describe live mechanisms as they operate today.
 - **Update the owner first**: when a public API, schema, invariant, or module composition changes, update its owning document before anything that links to it.
+- **Superlatives rot fastest**: "the only", "always", "never", and "all" turn a hard rule into a sentence that expires. Write the exact condition instead, and delete the claim when the code stops supporting it.
 - **Code wins**: when a document and verified code disagree, the document is wrong. Never paper over drift with a promise about the future.
 - **Link by relative path**: cross-references use repository-relative Markdown paths, so a moved file breaks its links loudly.
 

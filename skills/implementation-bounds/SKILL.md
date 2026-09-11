@@ -24,9 +24,15 @@ Proceed with these changes without interrupting the user.
 
 ### Substantive Deviation (STOP Immediately)
 Any action that crosses architectural boundaries or expands scope:
-1. Touching files in unrelated modules, domains, or microservices.
-2. Altering public API signatures, shared cross-module contracts, or database schemas.
-3. Adding a new external library, CLI package, or updating build tooling.
-4. Violating an explicit non-goal.
+- Touching files in unrelated modules, domains, or microservices.
+- Altering public API signatures, shared cross-module contracts, or database schemas.
+- Adding a dependency that is not already in the manifest, or changing build tooling.
+- Violating an explicit non-goal.
 
-**When a substantive deviation is needed: STOP immediately.** Do not commit. Present what boundary was reached, explain why the change is necessary, and await explicit user confirmation.
+**STOP.** Make no further edits and commit nothing. Report which boundary the work reached, why the change is necessary, and wait for explicit confirmation.
+
+Two cases are narrow enough to keep going, and both still require stating the change in your reply:
+- Adding a symbol to a module you are already editing, when no existing signature changes.
+- Deleting or renaming an internal helper that has no callers outside the module.
+
+Anything wider than those two is a substantive deviation, however small the diff looks. Treat the list as a floor, not a ceiling: an edit that satisfies the letter of one bullet while the developer would still be surprised is a substantive deviation.

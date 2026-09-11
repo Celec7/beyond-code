@@ -12,10 +12,12 @@ This skill is the protocol for finding and fixing the real defect at its source.
 ## The 3-Step Protocol
 
 ### 1. Contract Alignment
-Before editing code, compare the producer and consumer against the intended interface:
+Before editing code, compare the producer and the consumer against the contract they share:
 - **Did the producer break its contract?** (e.g. promised an object, emitted null or malformed data).
 - **Or did the consumer misread the contract?** (e.g. accessed `item.uuid` when the interface defines `item.id`).
 Decide which side of the boundary is wrong based on system types and documented contracts.
+
+A consumer is only a band-aid when its patch hides a producer that broke its contract. When the producer honors an honest contract and the consumer misread it, fixing the consumer is the fix, not a band-aid. Name which case you are in before editing.
 
 ### 2. Trace Upstream (Read-Only)
 If the producer emitted invalid state, stop editing and trace backward along the call chain:

@@ -2,23 +2,25 @@
 
 [![skills.sh](https://skills.sh/b/Celec7/beyond-code)](https://skills.sh/Celec7/beyond-code)
 
-A practical skill suite to stop coding agents from hallucinating, patching symptoms, cutting corners, and polluting documentation.
+A baseline engineering standard for coding agents: five small skills you can read in one sitting and rewrite to match how your team works.
 
 English | [中文](README_zh-CN.md)
 
 ## Why This Exists
 
-Coding with AI agents is fast, but anyone who uses them daily knows the recurring headaches:
+A capable coding agent does not need to be taught how to code. It needs to know which conventions are yours.
 
-1. **Over-engineering**: without clear boundaries on what **not** to build, agents invent unnecessary abstractions and bloated code.
-2. **Touching unrelated code**: asked to fix one function, they quietly modify unrelated files, public APIs, or dependencies.
-3. **Band-aid fixes**: when a test breaks or returns null, they slap `?.`, fallback defaults, or empty catch blocks at the crash site instead of investigating who passed the bad data.
-4. **Cutting corners**: under complex tasks, they leave `TODO` comments, fake implementations with empty functions, or relax test assertions just to get a green light.
-5. **Documentation rot**: cluttering project docs with temporary task checklists, refactoring histories, and speculative future promises that rot the moment code lands.
+Left unstated, those conventions get re-derived every session, and the answer drifts. A team that wants one home per fact, or no dependencies without asking, or commits that read like their repo's history, has no place to write that down where an agent will find it at the moment it matters.
 
-You do not need a heavy framework, extra directories, or endless tracking tables.
+Beyond Code is that place. Five guardrails, each one a norm rather than a procedure:
 
-Beyond Code gives you five focused, lightweight skills. Each does one job well, keeping the agent grounded and delivering clean code and living contracts.
+1. **scope-guard**: state what the change will not do, before it starts.
+2. **implementation-bounds**: name the target files, and stop at the boundary.
+3. **root-cause-debugging**: fix the defect where it lives, not where it surfaced.
+4. **code-integrity-audit**: a completion claim carries the output that proves it.
+5. **canonical-docs**: one home per fact, in the present tense, anchored to real types.
+
+They are deliberately plain Markdown, with no directory structure to adopt, no tracking tables, and no workflow to run. Edit them like the rest of your config: delete a rule you disagree with, add one your team keeps repeating, and let a capable agent do the rest.
 
 ## The 5 Core Skills
 
