@@ -1,31 +1,34 @@
-# Beyond Code: Engineering Guardrails Suite
+# Beyond Code
 
 [![skills.sh](https://skills.sh/b/Celec7/beyond-code)](https://skills.sh/Celec7/beyond-code)
 
-A lean suite of high-standard engineering mental models and hard guardrails for coding agents.
+A practical skill suite to stop coding agents from hallucinating, patching symptoms, cutting corners, and polluting documentation.
 
 English | [中文](README_zh-CN.md)
 
 ## Why This Exists
 
-As reasoning models and autonomous coding agents grow increasingly capable, heavy bureaucratic scaffolding (rigid tabular forms, directory state machines, and multi-stage ceremonies) yields diminishing returns and clutters token context.
+Coding with AI agents is fast, but anyone who uses them daily knows the recurring headaches:
 
-Modern agents do not need micromanagement. What they need are **sharp mental models, clear boundaries, and non-negotiable engineering disciplines**:
-- Knowing when to stop and align instead of guessing.
-- Refusing to slap band-aid null checks down at the crash site.
-- Staying strictly within declared boundaries during implementation.
-- Auditing diffs with adversarial skepticism before shipping.
+1. **Over-engineering**: without clear boundaries on what **not** to build, agents invent unnecessary abstractions and bloated code.
+2. **Touching unrelated code**: asked to fix one function, they quietly modify unrelated files, public APIs, or dependencies.
+3. **Band-aid fixes**: when a test breaks or returns null, they slap `?.`, fallback defaults, or empty catch blocks at the crash site instead of investigating who passed the bad data.
+4. **Cutting corners**: under complex tasks, they leave `TODO` comments, fake implementations with empty functions, or relax test assertions just to get a green light.
+5. **Documentation rot**: cluttering project docs with temporary task checklists, refactoring histories, and speculative future promises that rot the moment code lands.
 
-Inspired by the modular simplicity of Matt Pocock's engineering skills, Beyond Code strips away the procedural red tape and distills core software engineering intuitions into **four composable, zero-overhead atomic skills**.
+You do not need a heavy framework, extra directories, or endless tracking tables.
 
-## The Skill Suite
+Beyond Code gives you five focused, lightweight skills. Each does one job well, keeping the agent grounded and delivering clean code and living contracts.
 
-| Skill | Trigger / When to Use | Core Intuition |
+## The 5 Core Skills
+
+| Skill | When to Use | What It Does |
 | :--- | :--- | :--- |
-| **[`root-cause-debugging`](skills/root-cause-debugging/SKILL.md)** | When tests fail, code throws, or unexpected behavior occurs | **Fix at the source, never band-aid**: Trace upstream along the call chain, align contracts, and resolve defects at the origin instead of masking nulls downstream with `?.` or empty catches. |
-| **[`implementation-bounds`](skills/implementation-bounds/SKILL.md)** | When implementing features, refactoring, or guarding scope | **Declare bounds, stop on substantive deviations**: Stick to the declared target files and interfaces. Allow cohesive local edits (tests, barrel exports), but halt immediately if cross-domain files or public APIs are breached. |
-| **[`code-integrity-audit`](skills/code-integrity-audit/SKILL.md)** | Before completing a task, submitting a PR, or verifying changes | **Adversarial diff verification**: Inspect new additions for AI shortcuts, mock stubs, swallowed errors, and tautological tests. Demand fresh command output (evidence before claims). |
-| **[`scope-guard`](skills/scope-guard/SKILL.md)** | When defining requirements, planning, or clarifying intent | **Carve the negative space**: Define 2 to 4 Explicit Non-Goals to prevent scope creep. Engage in high-leverage technical alignment while keeping the developer in control of pacing. |
+| **[`scope-guard`](skills/scope-guard/SKILL.md)** | Before coding, while clarifying requirements | **Define what NOT to do**: Declare 2 to 4 explicit Non-Goals to stop scope creep. Surface key technical choices with recommendations, without jumping ahead before you are ready. |
+| **[`implementation-bounds`](skills/implementation-bounds/SKILL.md)** | During implementation and refactoring | **Keep edits within bounds**: Limit changes to the declared target files. Allow local test and export updates, but stop immediately if touching external modules or public APIs. |
+| **[`root-cause-debugging`](skills/root-cause-debugging/SKILL.md)** | When tests fail or runtime errors occur | **Fix at the source, no band-aids**: Check interface contracts, trace upstream along the call chain to find where bad data originated, and fix it there. Prohibit downstream `?.` or empty catch patches. |
+| **[`code-integrity-audit`](skills/code-integrity-audit/SKILL.md)** | Before finishing a task or opening a PR | **Catch shortcuts in diffs**: Check newly added lines for lingering `TODO`s, fake stubs, swallowed errors, and tautological tests. Demand fresh command output as proof. |
+| **[`canonical-docs`](skills/canonical-docs/SKILL.md)** | When documenting architecture, contracts, or syncing docs | **Living reference, zero slop**: Name files directly by technical subject, keep one home per fact, and anchor in core types. Strictly prohibit task plans, historical war stories, and rotting status annotations from `docs/`. |
 
 ## Installation
 
@@ -37,14 +40,15 @@ npx skills add Celec7/beyond-code
 
 Or selectively install individual skills you want.
 
-## How to Use
+## How to Use in Daily Work
 
-Each skill is self-contained and model-invoked by default. They can be used independently or paired seamlessly with your favorite workflows (such as TDD, PR review, or Matt Pocock's skill suite):
+Each skill is independent and model-invoked by default. You do not need to memorize commands:
 
-- **During feature design**: `scope-guard` helps you and the agent agree on explicit boundaries and Non-Goals before coding.
-- **During execution**: `implementation-bounds` keeps the agent focused on the primary files, preventing unauthorized dependency additions or schema drift.
-- **When code breaks**: `root-cause-debugging` forces the agent to trace bad data back to its upstream producer rather than adding ad-hoc `?.` or fallback defaults.
-- **Before sign-off**: `code-integrity-audit` runs a rigorous, skeptical check over the diff to ensure no stubs or faked tests slip through.
+- **Starting a feature**: let the agent use `scope-guard` to align on what is out of scope and clarify key technical choices;
+- **Writing code**: use `implementation-bounds` to confine changes to a tight set of files and avoid unintended blast radius;
+- **When code breaks**: remind the agent to use `root-cause-debugging` to fix bad data at the source rather than masking it downstream;
+- **Before sign-off**: run `code-integrity-audit` to inspect the diff for shortcuts, ensuring tests actually ran and passed;
+- **Documenting architecture**: use `canonical-docs` to keep `docs/` accurate to the living code, completely free of ephemeral task slop.
 
 ## License
 
