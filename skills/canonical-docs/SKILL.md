@@ -1,87 +1,36 @@
 ---
 name: canonical-docs
-description: Use when writing, updating, or auditing docs/, or when a document and the code it describes have drifted apart.
+description: Use when writing or reviewing maintained engineering documentation, choosing its location, or resolving drift between documentation and implementation.
 ---
 
 # Canonical Docs
 
-`docs/` records how the system works today: architecture, subsystem contracts, cross-cutting invariants, and domain vocabulary. It is not a task tracker, a progress log, or a record of how the code got here.
+Give useful explanations a clear owner. Code is the source of truth for actual behavior; requirements and valid decisions define intended behavior. Tests are evidence, not infallible authority. A discrepancy may be stale prose or a defect: determine which before changing the explanation.
 
-## Place the Document Before Writing
+## Place before writing
 
-A document's subject and its position in the tree fix its scope. Name the file after the concrete technical subject it governs. Do not sort documents into categories the tree does not have.
+Identify the reader and the judgment or operation the text helps them perform. Extend an existing owner before adding a page. Avoid hand-copying fields, call sequences, and inventories that source or a generator already provides.
 
-A fact lives in the tier whose job it is. Elsewhere, link there.
+Follow the project's documentation structure. If none exists and the task needs one, offer a few proportionate options, explain their costs, and recommend one. Establish it after the user chooses. Useful options include:
 
-| Tier | Owns | Does not belong |
-| :--- | :--- | :--- |
-| Root `docs/<subject>.md` | System-wide architecture, cross-cutting contracts, shared invariants, domain vocabulary | Type definitions, single-module detail |
-| `docs/subsystems/<name>.md` | One subsystem reference: type definitions, semantics, failure behavior | Architecture narration |
-| `docs/cookbook/<action>.md` | Procedures with numbered verification steps | Design rationale |
-| `docs/postmortem/<slug>.md` | Incident sequence, evidence, prevention | Teaching sequences |
-| Package README | That package's contract: config, semantics, limitations | Other packages' concerns |
-| JSDoc and code comments | Single-function mechanics, non-obvious local rationale | Anything a caller reads as a contract |
+- A root README and nearby explanations for a small project.
+- A root navigation page, module READMEs for local contracts, and `docs/` for cross-module material.
+- System explanations, subsystem references, task guides, and incident records for a larger documentation corpus.
 
-A package contract lives beside the package. It does not move into `docs/`. When a subject is too small for its own page, extend the page that already owns it rather than creating a new file.
+Create only needed pages. These are reference patterns, not a required tree.
 
-## What Does Not Belong in `docs/`
+Keep local mechanics beside code, module contracts with their module, and cross-module relationships at the system level. Higher pages explain purpose and guide readers to detail. Decision records own why a design was chosen; ordinary documentation owns the current explanation, not the decision history.
 
-A line earns its place by stating a fact about how the code runs today. These do not:
+## Preserve the proposition
 
-- **Task plans and progress**: checklists, breakdowns, status markers, completion percentages. These rot the moment the work lands.
-- **Narrated history**: "previously", "renamed from", "used to", "no longer". State the current fact. Commits carry the history.
-- **Status annotations in prose**: "implemented", "WIP", "future: ...".
-- **Reasoning transcripts**: deduction paths, intermediate benchmarks, rejected alternatives. Keep the resulting contract and its rules.
-- **Restated catalogs and types**: when source, a generator, or a type is authoritative, link to it. A hand-copied table drifts.
-- **Emphasis everywhere**: bold and capitals lose their meaning when every other clause carries them. Mark the clause that changes behavior.
-- **Private mechanics**: single-function behavior stays in JSDoc. `docs/` carries cross-module seams and invariant rules.
+State actors, actions, conditions, timing, ownership, failures, exceptions, and compatibility where readers need them. Use concrete active prose and ordinary punctuation, without em dashes. Keep non-obvious causal explanations. Cutting words must not weaken an obligation or remove an ordering guarantee.
 
-A conflict you cannot settle yet is not a fact. Leave it out, or state it explicitly as unresolved.
+Remove code narration, agent self-talk, private deliberation, repeated inventories, and stale plans. A tutorial follows prerequisites toward an observable outcome; a reference supports lookup. Do not bury either in the other's detail.
 
-## Writing the Prose
+## Verify and maintain
 
-Write with density. Every sentence states a fact about the running system.
+Check behavior claims against current implementation. Run documented operations when feasible and authorized, especially configuration, migration, and recovery instructions. State verification limits rather than claiming an unobserved result. Never document a known defect as intended behavior merely to reconcile text with code.
 
-- **Name actors and actions**: who calls whom, who owns a resource, who cleans up.
-- **State timing and ordering**: synchronous or asynchronous, what must precede what, which order is guaranteed.
-- **State negative guarantees**: what the system refuses to do, and what a caller must not assume. A refusal is as load-bearing as a capability.
-- **State failure behavior**: does it throw, return null, emit a terminal chunk, retry, or fall back. Never leave the outcome ambiguous.
+Update the owner when related behavior changes, then update derivatives and affected links. Follow existing translation and generation rules; do not invent a parallel synchronization system. Use relevant documentation checks and inspect the final text for accuracy.
 
-## Content Patterns
-
-A contract section states what a seam governs, who provides it, who consumes it, and what sits outside it. It names its `Source:` path and carries the exported type verbatim, never retyped from memory. Prose covers only what the type does not: timing, preconditions, normalization, and failure semantics.
-
-```markdown
-## Process sandbox seam
-
-The process-sandbox seam wraps a subprocess argv in a file-effect policy without
-coupling consumers to a platform runner. `sandbox-local` supplies the OS
-backends; `shell` consumers run inside it.
-
-Source: `packages/sandbox/src/index.ts`
-
-`SandboxMode` governs filesystem effects only. Network and process visibility
-are outside this vocabulary.
-
-```ts
-type SandboxMode = 'read-only' | 'workspace-write' | 'danger-full-access'
-```
-
-Enforcement is a reported fact. `full` means the backend governs every file
-effect promised by the mode; `partial` means an older kernel or host
-configuration governs only a subset.
-```
-
-A bug-class rule gets an imperative heading (`## Report orthogonal outcomes independently`), the mistaken assumption callers make, and the invariant that prevents recurrence.
-
-A domain concept gets one or two sentences saying what it IS, not what it does, plus its forbidden synonyms under `_Avoid_` (`Order`, `_Avoid_: Purchase, Transaction`). General programming terms stay out.
-
-## Keeping Documents True
-
-- **Present tense**: describe live mechanisms as they operate today.
-- **Update the owner first**: when a public API, schema, invariant, or module composition changes, update its owning document before anything that links to it.
-- **Superlatives rot fastest**: "the only", "always", "never", and "all" turn a hard rule into a sentence that expires. Write the exact condition instead, and delete the claim when the code stops supporting it.
-- **Code wins**: when a document and verified code disagree, the document is wrong. Never paper over drift with a promise about the future.
-- **Link by relative path**: cross-references use repository-relative Markdown paths, so a moved file breaks its links loudly.
-
-Adopt the repository's documentation standard for metadata and taxonomy. When a repository has none, keep front matter to a description and a type, and let the file path carry the rest. Match the examples already in that repository before inventing a new layout.
+Keep temporary task state out of formal explanations. A scoped edit does not authorize restructuring the whole corpus. Finish when the needed explanation is accurate and discoverable; no new document is required when existing code and prose already suffice.
