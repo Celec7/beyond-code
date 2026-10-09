@@ -2,7 +2,7 @@
 
 [![skills.sh](https://skills.sh/b/Celec7/beyond-code)](https://skills.sh/Celec7/beyond-code)
 
-The main workflow for agent-assisted software engineering, expressed through fourteen independent skills.
+The main workflow for agent-assisted software engineering, expressed through eighteen independent skills.
 
 English | [中文](README_zh-CN.md)
 
@@ -18,22 +18,42 @@ Each skill works with the information supplied in the request, conversation, cod
 
 “Automatic” means the agent may select the skill when relevant; users can also invoke it explicitly. It does not mean every task runs every skill. “User only” reserves a change in conversational mode for the user.
 
+### Foundation
+
+Foundation skills carry judgment the other skills reuse.
+
 | Skill | Judgment it provides | Invocation |
 | --- | --- | --- |
-| [grilling](skills/grilling/SKILL.md) | Explore ideas without imposing a goal or inventing the user's motives | User only |
+| [skill-authoring](skills/skill-authoring/SKILL.md) | Decide when a skill earns its place, and write its description, body, and tests | Automatic |
+| [error-handling](skills/error-handling/SKILL.md) | Define failures, their owners, and what remains safe after failure | Automatic |
+| [prose-standard](skills/prose-standard/SKILL.md) | Preserve every proposition and state what each prose surface owes | Automatic |
+| [trim-reasoning-leakage](skills/trim-reasoning-leakage/SKILL.md) | Remove prose that takes the authoring session's vantage | Automatic |
+
+### Domain
+
+| Skill | Judgment it provides | Invocation |
+| --- | --- | --- |
 | [clarify](skills/clarify/SKILL.md) | Resolve consequential ambiguity in problems, outcomes, and scope | Automatic |
 | [codebase-design](skills/codebase-design/SKILL.md) | Place responsibility and complexity behind useful interfaces | Automatic |
 | [plan](skills/plan/SKILL.md) | Arrange verifiable slices, dependencies, and staged migrations | Automatic |
 | [tdd](skills/tdd/SKILL.md) | Build one behavior through red, green, and refactoring | Automatic |
 | [debug](skills/debug/SKILL.md) | Distinguish causes with evidence before repairing behavior | Automatic |
-| [test-reliability](skills/test-reliability/SKILL.md) | Control timing, isolation, resource ownership, and teardown | Automatic |
 | [simplify](skills/simplify/SKILL.md) | Remove complexity only after understanding what it earns | Automatic |
+| [test-reliability](skills/test-reliability/SKILL.md) | Control timing, isolation, resource ownership, and teardown | Automatic |
 | [code-review](skills/code-review/SKILL.md) | Inspect requirements, implementation, and evidence independently | Automatic |
-| [conventional-commit](skills/conventional-commit/SKILL.md) | Express a coherent change using the chosen commit convention | Automatic |
 | [canonical-docs](skills/canonical-docs/SKILL.md) | Give accurate explanations one appropriate owner | Automatic |
 | [decision-records](skills/decision-records/SKILL.md) | Preserve and maintain reasons that code cannot recover | Automatic |
+| [conventional-commit](skills/conventional-commit/SKILL.md) | Express a coherent change using the chosen commit convention | Automatic |
+
+### Modes
+
+| Skill | Judgment it provides | Invocation |
+| --- | --- | --- |
+| [grilling](skills/grilling/SKILL.md) | Explore ideas without imposing a goal or inventing the user's motives | User only |
 | [teach](skills/teach/SKILL.md) | Build understanding through explanation and application | User only |
 | [retro](skills/retro/SKILL.md) | Derive concrete improvements from real work | User only |
+
+The suite's structure, its three content layers, and its authoring rules live in [docs/skill-architecture.md](docs/skill-architecture.md).
 
 A task can enter anywhere. A clear bug report can start with diagnosis; an existing change can start with review. Design, planning, and verification are methods to use where needed, not a sequence of approval ceremonies. Small tasks stay small.
 
@@ -60,9 +80,9 @@ Code is the source of truth for actual behavior. Requirements and valid decision
 
 Formal documentation follows the project's existing structure. If there is none and a structure is needed, `canonical-docs` offers suitable options for the user to choose. No empty documentation tree is created as setup.
 
-Decision records preserve motivation, constraints, real alternatives, consequences, and reasons to reconsider. Follow an active ADR/RFC convention when one exists. Otherwise, `decision-records` uses `.agents/notes/{proposed,implemented,rejected,archived}/YYYY-MM-DD-topic.md`, creating only needed directories. No index, classification tree, or sidecar is required. Archived records are frozen history, not current authority.
+Decision records preserve motivation, constraints, real alternatives, consequences, and reasons to reconsider. Follow an active ADR/RFC convention when one exists. Otherwise, `decision-records` uses `docs/agents/notes/{proposed,implemented,rejected,archived}/YYYY-MM-DD-topic.md`, creating only needed directories. No index, classification tree, or sidecar is required. Archived records are frozen history, not current authority.
 
-Keep temporary state in conversation by default. When a handoff needs a file and no project convention exists, `plan` offers one optional `.agents/work/<task>.md` record. Name its owner and cleanup or promotion point. Do not assume it should be committed. On closure, preserve useful decisions in their owner and remove disposable task-owned state. No skill invocation requires a file output.
+Keep temporary state in conversation by default. When a handoff needs a file and no project convention exists, `plan` offers one optional `docs/agents/work/<task>.md` record. Name its owner and cleanup or promotion point. Do not assume it should be committed. On closure, preserve useful decisions in their owner and remove disposable task-owned state. No skill invocation requires a file output.
 
 ## Installation and invocation
 

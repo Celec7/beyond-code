@@ -2,7 +2,7 @@
 
 [![skills.sh](https://skills.sh/b/Celec7/beyond-code)](https://skills.sh/Celec7/beyond-code)
 
-以十四个独立技能，构成 agent 辅助软件工程的工作流主线。
+以十八个独立技能，构成 agent 辅助软件工程的工作流主线。
 
 [English](README.md) | 中文
 
@@ -18,22 +18,42 @@ Beyond Code 提供贯穿需求澄清、设计、规划、实现反馈、审查�
 
 “自主”表示 agent 可以在适用时选择，也允许用户显式调用，并非每个任务都要执行。“仅用户”表示对话方式的改变由用户发起。
 
+### 基础（Foundation）
+
+基础技能提供其他技能复用的判断。
+
 | 技能 | 提供的判断 | 调用方式 |
 | --- | --- | --- |
-| [grilling](skills/grilling/SKILL.md) | 深入探索想法，不强加目标，不替用户编造动机 | 仅用户 |
+| [skill-authoring](skills/skill-authoring/SKILL.md) | 判断技能何时值得存在，并编写其描述、正文与测试 | 自主 |
+| [error-handling](skills/error-handling/SKILL.md) | 定义失败、其归属者，以及失败后仍安全的部分 | 自主 |
+| [prose-standard](skills/prose-standard/SKILL.md) | 保留每个命题，并规定各类散文必须说明什么 | 自主 |
+| [trim-reasoning-leakage](skills/trim-reasoning-leakage/SKILL.md) | 清除以创作会话为视角的散文痕迹 | 自主 |
+
+### 领域（Domain）
+
+| 技能 | 提供的判断 | 调用方式 |
+| --- | --- | --- |
 | [clarify](skills/clarify/SKILL.md) | 澄清问题、结果和范围中的关键歧义 | 自主 |
 | [codebase-design](skills/codebase-design/SKILL.md) | 安排责任与复杂性，设计有用的接口 | 自主 |
 | [plan](skills/plan/SKILL.md) | 组织可验证切片、依赖与分阶段迁移 | 自主 |
 | [tdd](skills/tdd/SKILL.md) | 一次一个行为，建立红绿重构循环 | 自主 |
 | [debug](skills/debug/SKILL.md) | 用证据区分原因，再修复行为 | 自主 |
-| [test-reliability](skills/test-reliability/SKILL.md) | 控制时序、隔离、资源归属和清理 | 自主 |
 | [simplify](skills/simplify/SKILL.md) | 理解复杂性承担的责任，再移除多余负担 | 自主 |
+| [test-reliability](skills/test-reliability/SKILL.md) | 控制时序、隔离、资源归属和清理 | 自主 |
 | [code-review](skills/code-review/SKILL.md) | 独立检查需求、实现和证据 | 自主 |
-| [conventional-commit](skills/conventional-commit/SKILL.md) | 按选定的提交约定表达完整变更意图 | 自主 |
 | [canonical-docs](skills/canonical-docs/SKILL.md) | 让准确说明有合适且明确的归属 | 自主 |
 | [decision-records](skills/decision-records/SKILL.md) | 保存并维护无法从代码恢复的决策理由 | 自主 |
+| [conventional-commit](skills/conventional-commit/SKILL.md) | 按选定的提交约定表达完整变更意图 | 自主 |
+
+### 模式（Modes）
+
+| 技能 | 提供的判断 | 调用方式 |
+| --- | --- | --- |
+| [grilling](skills/grilling/SKILL.md) | 深入探索想法，不强加目标，不替用户编造动机 | 仅用户 |
 | [teach](skills/teach/SKILL.md) | 通过解释与应用建立理解 | 仅用户 |
 | [retro](skills/retro/SKILL.md) | 从实际工作中提炼具体改进 | 仅用户 |
+
+套件的结构、三层内容模型与编写规则见 [docs/skill-architecture.md](docs/skill-architecture.md)。
 
 任务可以从任意位置进入。明确的故障可以直接诊断，已有改动可以直接审查。设计、规划和验证按需要使用，不组成一串审批仪式。小任务保持简短。
 
@@ -60,9 +80,9 @@ Agent 可以在当前任务中使用专项指导，再带着结果和证据继�
 
 正式文档沿用项目已有结构。没有结构且确实需要建立时，由 `canonical-docs` 提供适合的方案供用户选择。不把空目录树作为初始化步骤。
 
-决策记录保存动机、约束、真实替代方案、后果和重新考虑的条件。已有有效的 ADR/RFC 约定就沿用；没有时，`decision-records` 使用 `.agents/notes/{proposed,implemented,rejected,archived}/YYYY-MM-DD-topic.md`，按需创建目录。不要求索引、分类树或配套元数据。归档是冻结的历史，不作为当前依据。
+决策记录保存动机、约束、真实替代方案、后果和重新考虑的条件。已有有效的 ADR/RFC 约定就沿用；没有时，`decision-records` 使用 `docs/agents/notes/{proposed,implemented,rejected,archived}/YYYY-MM-DD-topic.md`，按需创建目录。不要求索引、分类树或配套元数据。归档是冻结的历史，不作为当前依据。
 
-临时状态默认留在对话中。交接确需文件、项目又没有约定时，`plan` 提供一个可选的 `.agents/work/<task>.md` 工作记录，注明负责人和清理或提炼时点，不默认提交。工作结束后，将有用决定放入其归属，移除本任务的可丢弃状态。任何技能调用都不强制产生文件。
+临时状态默认留在对话中。交接确需文件、项目又没有约定时，`plan` 提供一个可选的 `docs/agents/work/<task>.md` 工作记录，注明负责人和清理或提炼时点，不默认提交。工作结束后，将有用决定放入其归属，移除本任务的可丢弃状态。任何技能调用都不强制产生文件。
 
 ## 安装与调用
 
