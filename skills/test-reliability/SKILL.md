@@ -54,3 +54,7 @@ Retries, wider timeouts, and serialization need a reason tied to the actual cons
 - Report the cause or fixture contract, focused evidence, environment limits, and cleanup result.
 - Match the evidence to the risk: restoration, quiescent teardown, controlled overlap, or a concurrent independent-process check.
 - Never describe a retry, a skipped test, or a pending run as passing.
+
+## References
+
+- [Reliability patterns](references/patterns.md)

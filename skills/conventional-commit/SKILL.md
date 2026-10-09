@@ -58,3 +58,7 @@ selected result set.
 - Before returning the message, check for omitted behavior, overstated results, breaking effects, and unrelated content.
 - Use [prose-standard](../prose-standard/SKILL.md) for body wording: preserve the reason, impact, and any compatibility promise.
 - Report the staged scope you actually inspected when committing.
+
+## References
+
+- [Message examples](references/message-examples.md)

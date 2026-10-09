@@ -51,4 +51,5 @@ When repair is authorized, make the smallest change that explains and removes th
 
 ## References
 
+- [Hypothesis and reproduction](references/hypothesis-and-repro.md)
 - [Anti-patterns and worked cases](../error-handling/references/examples.md)

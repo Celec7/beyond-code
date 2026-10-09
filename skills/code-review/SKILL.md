@@ -48,3 +48,7 @@ For each finding, identify its location, triggering condition, consequence, and 
 - Apply [error-handling](../error-handling/SKILL.md) to changed failure paths and [test-reliability](../test-reliability/SKILL.md) to resource-owning or asynchronous tests.
 - Use [prose-standard](../prose-standard/SKILL.md) for added or changed prose and [trim-reasoning-leakage](../trim-reasoning-leakage/SKILL.md) for authoring-session residue.
 - Keep the result in the conversation unless another deliverable was requested. A clean review is not a guarantee beyond that scope or permission to publish.
+
+## References
+
+- [Finding examples](references/finding-examples.md)

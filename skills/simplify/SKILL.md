@@ -39,3 +39,7 @@ Update current explanations at their owner, and use [decision-records](../decisi
 - Verify the behavior and contracts the change can affect, using focused evidence and required project checks.
 - Report supported removals or ranked proposals, deliberate keeps, and remaining consumer uncertainty.
 - "This complexity still earns its place" is a valid result; there is no deletion quota.
+
+## References
+
+- [Removal checklist](references/removal-checklist.md)

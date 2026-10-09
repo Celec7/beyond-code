@@ -43,7 +43,7 @@ Tier names and paths are examples. Map each role to the project's actual paths; 
 
 1. Inventory the project's existing documentation and map each role to an existing path. Adopt only the roles that are actually missing.
 2. Create only the directories that a real document needs. Do not scaffold an empty tree.
-3. Record the role-to-path mapping where contributors will look, such as the project's agent instructions or a `docs/README.md`.
+3. Record the role-to-path mapping where contributors will look, such as the project's agent instructions or a `docs/README.md`; [an example tree](../templates/documentation-tree.md) shows the shape.
 4. Declare adoption explicitly, for example in the agent instructions, so a mechanical check can apply the tier rules only to projects that opted in.
 
 ## Boundary

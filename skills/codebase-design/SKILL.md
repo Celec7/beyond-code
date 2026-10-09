@@ -47,3 +47,7 @@ Before committing to a consequential, unsettled design, sketch a structurally di
 - Stop when responsibilities, important interface behavior, constraints, and material tradeoffs support the next step.
 - Report a proportionate explanation or diagram; persist only reasons worth keeping.
 - Use a small isolated experiment when discussion cannot settle a critical behavior, and clean up its resources afterward.
+
+## References
+
+- [Design it twice](references/design-it-twice.md)

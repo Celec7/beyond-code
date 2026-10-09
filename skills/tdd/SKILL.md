@@ -46,3 +46,7 @@ Repeat vertically. Writing a large batch of tests before any implementation fixe
 - Read the selected test count and actual output; a successful command with no relevant tests proves little.
 - Finish when the requested behaviors and affected contracts have credible evidence. Report meaningful coverage and gaps, not a cycle-by-cycle diary.
 - If the original failure could not be observed, say so rather than claiming a completed red-green cycle.
+
+## References
+
+- [Test design](references/test-design.md)
