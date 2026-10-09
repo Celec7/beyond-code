@@ -78,7 +78,7 @@ Select companions individually rather than installing overlapping suites wholesa
 
 Code is the source of truth for actual behavior. Requirements and valid decisions describe intended behavior; a mismatch may be a bug, not permission to rewrite the requirement. Tests provide evidence and can themselves be wrong.
 
-Formal documentation follows the project's existing structure. If there is none and a structure is needed, `canonical-docs` offers suitable options for the user to choose. No empty documentation tree is created as setup.
+Formal documentation follows the project's existing structure. If there is none and a structure is needed, `canonical-docs` offers suitable options for the user to choose, including an optional documentation tier taxonomy for larger or agent-heavy corpora. No empty documentation tree is created as setup.
 
 Decision records preserve motivation, constraints, real alternatives, consequences, and reasons to reconsider. Follow an active ADR/RFC convention when one exists. Otherwise, `decision-records` uses `docs/agents/notes/{proposed,implemented,rejected,archived}/YYYY-MM-DD-topic.md`, creating only needed directories. No index, classification tree, or sidecar is required. Archived records are frozen history, not current authority.
 

@@ -167,13 +167,4 @@ Typical next steps, all optional:
 
 ### One home per fact
 
-| Kind of truth | Owner |
-| --- | --- |
-| Lasting decision rationale and rejected alternatives | `decision-records` |
-| Incident story: why a defect escaped the safeguards | `canonical-docs` (the postmortem tier) |
-| Current explanation of a system | `canonical-docs` |
-| Procedure or how-to | documentation |
-| Task state | the conversation; a `docs/agents/work/<task>.md` record only when a handoff needs one, removed or promoted at closure |
-| Known code issue | the project's TODO marker convention, not a record |
-
-Task state is ephemeral. The durable outputs are decisions and incident records; nothing archives a task itself.
+[The documentation tier taxonomy](../skills/canonical-docs/references/documentation-tiers.md) owns where each kind of truth lives. Two task-specific rules stay here: task state is ephemeral and is not a tier, and a known code issue belongs in the project's TODO marker convention rather than a record. The durable outputs of a task are decisions and incident records; nothing archives a task itself.

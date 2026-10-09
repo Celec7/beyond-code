@@ -32,13 +32,13 @@ Follow the project's documentation structure. If none exists and the task needs 
 - A root navigation page, module READMEs for local contracts, and `docs/` for cross-module material.
 - System explanations, subsystem references, task guides, and incident records for a larger documentation corpus.
 
+An optional [tier preset](references/documentation-tiers.md) maps each documentation role to a home and states what does not belong, for repositories that want a ready-made taxonomy.
+
 Create only needed pages. These are reference patterns, not a required tree.
 
 ### Preserve the proposition
 
-Use [prose-standard](../prose-standard/SKILL.md) for the sentence-level contract: actors, actions, conditions, timing, ownership, failures, exceptions, compatibility, and preserved modality and ordering. Use [trim-reasoning-leakage](../trim-reasoning-leakage/SKILL.md) for reasoning leakage such as dead citations, change narration, and review vantage.
-
-A tutorial follows prerequisites toward an observable outcome; a reference supports lookup. Do not bury either in the other's detail.
+Use [prose-standard](../prose-standard/SKILL.md) for the sentence-level contract and [trim-reasoning-leakage](../trim-reasoning-leakage/SKILL.md) for reasoning leakage. A tutorial follows prerequisites to an observable outcome; a reference supports lookup. Do not bury either in the other's detail.
 
 ### Incident records
 
@@ -46,11 +46,9 @@ Own the postmortem tier: a backward-looking record of a defect that reached a us
 
 ### Verify and maintain
 
-Check behavior claims against current implementation. Run documented operations when feasible and authorized, especially configuration, migration, and recovery instructions. State verification limits rather than claiming an unobserved result. Never document a known defect as intended behavior merely to reconcile text with code.
+Check behavior claims against current implementation, and run documented operations when feasible and authorized, especially configuration, migration, and recovery instructions. State verification limits rather than claiming an unobserved result. Never document a known defect as intended behavior merely to reconcile text with code.
 
-Update the owner when related behavior changes, then update derivatives and affected links. Follow existing translation and generation rules; do not invent a parallel synchronization system.
-
-Keep temporary task state out of formal explanations. Finish when the needed explanation is accurate and discoverable; no new document is required when existing code and prose already suffice.
+Update the owner when related behavior changes, then update derivatives and affected links. Follow existing translation and generation rules; do not invent a parallel synchronization system. Keep temporary task state out of formal explanations.
 
 ## Validate and report
 
