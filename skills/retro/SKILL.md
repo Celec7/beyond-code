@@ -41,4 +41,5 @@ Look for leverage in the work: wasted investigation, recurring misunderstanding,
 
 - Keep local fixes local. A recurring project constraint may justify changing project guidance; a reusable method may justify proposing a skill change. Explain the gap and the cost of another rule first.
 - Return the important outcomes, supported explanations, and actionable suggestions.
+- Route a durable result by kind: a lasting decision to [decision-records](../decision-records/SKILL.md), an incident lesson to a postmortem under [canonical-docs](../canonical-docs/SKILL.md), and a reusable method to a skill change under [skill-authoring](../skill-authoring/SKILL.md).
 - Keep the result in the conversation unless persistence is requested. Preserve accepted durable reasons in their owner, not a transcript of every attempt or an attribution of motives to the user.

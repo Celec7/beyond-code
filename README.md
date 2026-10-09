@@ -53,7 +53,7 @@ Foundation skills carry judgment the other skills reuse.
 | [teach](skills/teach/SKILL.md) | Build understanding through explanation and application | User only |
 | [retro](skills/retro/SKILL.md) | Derive concrete improvements from real work | User only |
 
-The suite's structure, its three content layers, and its authoring rules live in [docs/skill-architecture.md](docs/skill-architecture.md).
+The suite's structure, its three content layers, its authoring rules, and its task flow and record ownership live in [docs/skill-architecture.md](docs/skill-architecture.md).
 
 A task can enter anywhere. A clear bug report can start with diagnosis; an existing change can start with review. Design, planning, and verification are methods to use where needed, not a sequence of approval ceremonies. Small tasks stay small.
 

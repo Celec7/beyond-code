@@ -53,7 +53,7 @@ Beyond Code 提供贯穿需求澄清、设计、规划、实现反馈、审查�
 | [teach](skills/teach/SKILL.md) | 通过解释与应用建立理解 | 仅用户 |
 | [retro](skills/retro/SKILL.md) | 从实际工作中提炼具体改进 | 仅用户 |
 
-套件的结构、三层内容模型与编写规则见 [docs/skill-architecture.md](docs/skill-architecture.md)。
+套件的结构、三层内容模型、编写规则，以及任务流程与记录归属，见 [docs/skill-architecture.md](docs/skill-architecture.md)。
 
 任务可以从任意位置进入。明确的故障可以直接诊断，已有改动可以直接审查。设计、规划和验证按需要使用，不组成一串审批仪式。小任务保持简短。
 

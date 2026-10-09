@@ -143,3 +143,37 @@ Check these mechanically when the suite changes:
 - Every domain skill links its foundations instead of restating them.
 - Every skill ends with `Validate and report`, or a mode-specific closing section such as `## Stopping and persistence`.
 - Every changed skill has a recorded baseline and a post-change check.
+
+## 13. Task flow and record ownership
+
+A task may enter at any stage. The transitions below are typical, not a required chain, and invoking a skill never widens the task.
+
+| Stage | Primary skills | Cross-cutting |
+| --- | --- | --- |
+| Frame | `clarify`, or `grilling` for open exploration | |
+| Design | `codebase-design` | |
+| Plan | `plan` | |
+| Implement and harden | the agent's own work, with `tdd`, `debug`, `error-handling`, `test-reliability`, `simplify` | `prose-standard`, `trim-reasoning-leakage` |
+| Review and land | `code-review`, `conventional-commit` | |
+| Record and reflect | `decision-records`, `canonical-docs`, `skill-authoring`, `retro` | |
+
+Typical next steps, all optional:
+
+- `clarify` to `codebase-design` or `plan`.
+- `codebase-design` to `plan`, and to `decision-records` when a lasting choice is made.
+- `plan` to implementation with `tdd`; at closure, promote durable output before removing the work record.
+- `code-review` to `conventional-commit`, and to `decision-records` for lasting rationale.
+- Any closure to `retro` when the user asks for it.
+
+### One home per fact
+
+| Kind of truth | Owner |
+| --- | --- |
+| Lasting decision rationale and rejected alternatives | `decision-records` |
+| Incident story: why a defect escaped the safeguards | `canonical-docs` (the postmortem tier) |
+| Current explanation of a system | `canonical-docs` |
+| Procedure or how-to | documentation |
+| Task state | the conversation; a `docs/agents/work/<task>.md` record only when a handoff needs one, removed or promoted at closure |
+| Known code issue | the project's TODO marker convention, not a record |
+
+Task state is ephemeral. The durable outputs are decisions and incident records; nothing archives a task itself.

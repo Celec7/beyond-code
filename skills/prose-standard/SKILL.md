@@ -35,6 +35,7 @@ Before editing, identify every proposition in the passage. Preserve each relevan
 - **Tests:** only non-obvious design, such as why a fixture, assertion, or indirect observation is needed. Delete walkthroughs.
 - **READMEs:** the consumer contract: configuration, semantics, failures, limitations, extension points, and model-visible effects.
 - **Decision records:** unique rationale, alternatives, consequences, and verification evidence.
+- **Postmortems:** the incident sequence, evidence, causal chain, impact, and prevention.
 - **Prompts and visible strings:** wording is behavior. Follow the owning localization and snapshot rules.
 - **Diagnostics:** name the failing subject, the violated rule, and the correction when non-obvious.
 

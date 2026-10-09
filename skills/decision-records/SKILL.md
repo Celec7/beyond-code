@@ -10,7 +10,7 @@ This skill is guidance, not a script. Preserve reasons a future maintainer canno
 ## When not to use
 
 - Temporary task state, plans, or investigation logs. Use [plan](../plan/SKILL.md) or the conversation.
-- The current explanation of a system. Use [canonical-docs](../canonical-docs/SKILL.md).
+- The current explanation of a system, or an incident story about a defect that escaped. Use [canonical-docs](../canonical-docs/SKILL.md).
 - Wording of the record. Use [prose-standard](../prose-standard/SKILL.md).
 
 ## Inputs and authorization

@@ -40,6 +40,10 @@ Use [prose-standard](../prose-standard/SKILL.md) for the sentence-level contract
 
 A tutorial follows prerequisites toward an observable outcome; a reference supports lookup. Do not bury either in the other's detail.
 
+### Incident records
+
+Own the postmortem tier: a backward-looking record of a defect that reached a user, a merged change, or a release. Write one when the defect is subtle, systemic, and costly to rediscover, and link the guardrails it motivated. [incident records](references/incident-records.md) owns the trigger criteria and the required shape.
+
 ### Verify and maintain
 
 Check behavior claims against current implementation. Run documented operations when feasible and authorized, especially configuration, migration, and recovery instructions. State verification limits rather than claiming an unobserved result. Never document a known defect as intended behavior merely to reconcile text with code.
