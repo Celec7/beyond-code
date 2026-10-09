@@ -94,7 +94,7 @@ Select the whole suite or the individual skills you need. Skill bodies are Engli
 
 For `grilling`, `teach`, and `retro`, `SKILL.md` declares `disable-model-invocation: true`, and `agents/openai.yaml` declares `policy.allow_implicit_invocation: false`. These encode user-only intent for hosts that support the respective metadata. Host behavior varies; the skill text also requires a user request. Other skills retain default discovery. This is instruction and invocation configuration, not mechanical edit prevention.
 
-Structural checks cover packaging and references, not agent behavior. Behavioral evaluation will come from development use; the suite makes no claim of tested compliance across models or hosts.
+Run `node scripts/check-skills.mjs` to check the structure locally: frontmatter, required sections, links, catalog, and resources. Its errors are structural; its warnings, such as the word budget, are advisory. Behavioral evaluation will come from development use; the suite makes no claim of tested compliance across models or hosts.
 
 ## License
 

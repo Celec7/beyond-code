@@ -1,6 +1,6 @@
 ---
 name: teach
-description: Build understanding through explanation, examples, and practice at the user's request.
+description: Use when the user asks to learn a topic or build understanding through explanation, examples, and practice.
 disable-model-invocation: true
 ---
 

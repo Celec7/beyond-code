@@ -40,7 +40,7 @@ description: Use when <triggering conditions and symptoms>. Use <other-skill> wh
 ```
 
 - `name` uses lowercase letters, digits, and hyphens.
-- `description` is third person and starts with "Use when". It states triggering conditions and symptoms only. Do not summarize the workflow in the description. A workflow summary becomes the shortcut a model follows instead of reading the body.
+- `description` is third person and starts with "Use when" or "Use for". It states triggering conditions and symptoms only. Do not summarize the workflow in the description. A workflow summary becomes the shortcut a model follows instead of reading the body.
 - `disable-model-invocation: true` declares a user-only skill (see section 6). Add `agents/openai.yaml` with `policy.allow_implicit_invocation: false` for hosts that read it.
 
 ### Body skeleton
@@ -135,7 +135,7 @@ The suite has eighteen host-agnostic skills. Against this contract:
 
 ## 12. Validating the contract
 
-Check these mechanically when the suite changes:
+Run `node scripts/check-skills.mjs` to check these mechanically when the suite changes. It reports errors (structural and blocking) and warnings (advisory):
 
 - Every `SKILL.md` has `name` and a trigger-only `description`.
 - Triggering conditions appear once, in the frontmatter `description`, not repeated as a body section.

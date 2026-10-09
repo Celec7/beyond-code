@@ -1,6 +1,6 @@
 ---
 name: grilling
-description: Explore an idea through sustained questions, examples, and challenges at the user's request.
+description: Use when the user asks for sustained probing or open exploration of an idea, rather than a decision or an implementation.
 disable-model-invocation: true
 ---
 

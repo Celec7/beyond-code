@@ -1,6 +1,6 @@
 ---
 name: retro
-description: Review a real work session and identify concrete improvements at the user's request.
+description: Use when the user asks to review a real work session for concrete improvements.
 disable-model-invocation: true
 ---
 

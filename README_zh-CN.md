@@ -94,7 +94,7 @@ npx skills add Celec7/beyond-code
 
 `grilling`、`teach`、`retro` 在 `SKILL.md` 中声明 `disable-model-invocation: true`，并在 `agents/openai.yaml` 中声明 `policy.allow_implicit_invocation: false`，分别供支持相应元数据的宿主表达仅用户触发的意图。宿主行为可能不同，正文也要求用户主动请求。其他技能保持默认发现方式。这些是指令与调用配置，不是机械编辑拦截。
 
-结构检查覆盖文件格式和引用，不证明 agent 的实际行为。行为效果留待日常开发检验，当前不宣称已验证跨模型或跨宿主的遵循效果。
+本地运行 `node scripts/check-skills.mjs` 检查结构：frontmatter、必需段落、链接、目录与资源。其中的 error 是结构性问题，warning（如篇幅）仅为建议。行为效果留待日常开发检验，当前不宣称已验证跨模型或跨宿主的遵循效果。
 
 ## 开源协议
 
