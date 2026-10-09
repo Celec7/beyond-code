@@ -5,11 +5,24 @@ description: Use when drafting or reviewing commit messages or organizing change
 
 # Conventional Commit
 
-Describe one coherent engineering change using Conventional Commits. Read the actual intended diff first; the original task title may no longer describe it.
+This skill is guidance, not a script. Describe one coherent engineering change using Conventional Commits. Read the actual intended diff first; the original task title may no longer describe it.
+
+## When not to use
+
+- Organizing the work itself into reviewable slices. Use [plan](../plan/SKILL.md).
+- Deciding whether a change is safe or complete. Use [code-review](../code-review/SKILL.md).
+- A request for a commit message with no intention to commit; a message request authorizes no Git mutation.
+
+## Inputs and authorization
+
+- **Required:** the actual intended diff, not the original task title.
+- **Authorization:** drafting a message authorizes no Git mutation. Committing requires an explicit request; inspect the exact staged content and preserve unrelated user work. Commit permission does not extend to push or history rewriting.
+
+## Method
 
 Implementation, tests, and related documentation can share one intent. Split independent changes when doing so improves review or reversal, not merely because files have different types. Do not force coupled edits into broken intermediate commits.
 
-## Grammar
+### Grammar
 
 ```text
 <type>[optional scope][!]: <description>
@@ -27,7 +40,7 @@ Write a concise description without a trailing period. In English, use the imper
 
 Add a body only for a problem, reason, or impact the title does not explain. Separate it with a blank line and wrap prose around 72 columns. Describe the change, not the agent's sequence of edits.
 
-## Compatibility and trailers
+### Compatibility and trailers
 
 Mark a breaking contract with `!` or an uppercase `BREAKING CHANGE:` footer. Explain impact and migration when needed. Compatibility depends on what consumers can rely on, not diff size. Under Conventional Commits semantics, `fix` indicates PATCH, `feat` MINOR, and a breaking change MAJOR; other types have no implicit version effect.
 
@@ -40,4 +53,8 @@ Apply active filters to every page so exported records match the
 selected result set.
 ```
 
-Before returning the message, check for omitted behavior, overstated results, breaking effects, and unrelated content. A request for a message authorizes no Git mutation. When committing is requested, inspect the exact staged content and preserve unrelated user work. Commit permission does not extend to push or history rewriting.
+## Validate and report
+
+- Before returning the message, check for omitted behavior, overstated results, breaking effects, and unrelated content.
+- Use [prose-standard](../prose-standard/SKILL.md) for body wording: preserve the reason, impact, and any compatibility promise.
+- Report the staged scope you actually inspected when committing.
